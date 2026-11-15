@@ -88,6 +88,19 @@ export function getTopCategories(limit = 6): CategoryCount[] {
   return getCategoriesWithContent().slice(0, limit);
 }
 
+/** Stable URL slug for a category name, e.g. "3D" → "3d". */
+export function categorySlug(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export function categoryPath(name: string): string {
+  return `/category/${categorySlug(name)}/`;
+}
+
 export function getCategoriesWithContent(): CategoryCount[] {
   const counts = new Map<string, number>();
   for (const game of allGames) {

@@ -242,7 +242,25 @@ function initPlayedRecord() {
   });
 }
 
+function categorySlugClient(name: string) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export function initCategoryUI() {
+  const earlyParams = new URLSearchParams(window.location.search);
+  const earlyCategory = earlyParams.get('category');
+  if (earlyCategory) {
+    const slug = categorySlugClient(earlyCategory);
+    if (slug && slug !== 'all') {
+      window.location.replace(`/category/${slug}/`);
+      return;
+    }
+  }
+
   const sidebar = document.getElementById('category-sidebar');
   const backdrop = document.getElementById('category-backdrop');
   const toggle = document.getElementById('category-toggle');
@@ -485,6 +503,13 @@ export function initCategoryUI() {
     searchTimer = window.setTimeout(() => {
       applyFilters({ scroll: false, resetPage: true, activate: true });
     }, 180);
+  });
+  search?.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' || document.getElementById('games-grid')) return;
+    const q = (search?.value || '').trim();
+    if (!q) return;
+    event.preventDefault();
+    window.location.href = `/?q=${encodeURIComponent(q)}`;
   });
   search?.setAttribute('aria-controls', 'games-grid');
 

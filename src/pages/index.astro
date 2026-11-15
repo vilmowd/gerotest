@@ -4,6 +4,7 @@ import GameCard from '../components/GameCard.astro';
 import GameBanner from '../components/GameBanner.astro';
 import {
   allGames,
+  categoryPath,
   getPopularGames,
   getPopularInCategory,
   getTopCategories,
@@ -146,7 +147,7 @@ const jsonLd = {
         <div class="mt-5 flex flex-wrap gap-2" aria-label="Quick category jumps">
           {kidQuickCats.map((name) => (
             <a
-              href={`/?category=${encodeURIComponent(name)}`}
+              href={categoryPath(name)}
               class="quick-cat-chip"
             >
               {name}
@@ -269,7 +270,9 @@ const jsonLd = {
         <div class="mb-4 flex items-end justify-between gap-3">
           <div>
             <h2 id={`cat-${row.name}`} class="font-display text-xl font-bold text-white sm:text-2xl">
-              Popular in {row.name}
+              <a href={categoryPath(row.name)} class="hover:text-arcade-accent">
+                Popular in {row.name}
+              </a>
             </h2>
           </div>
         </div>

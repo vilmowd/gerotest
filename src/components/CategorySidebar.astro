@@ -1,5 +1,5 @@
 ---
-import { getCategoriesWithContent } from '../lib/games';
+import { categoryPath, categorySlug, getCategoriesWithContent } from '../lib/games';
 import CategoryIcon from './CategoryIcon.astro';
 
 interface Props {
@@ -8,6 +8,9 @@ interface Props {
 
 const { show = true } = Astro.props;
 const categories = getCategoriesWithContent();
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const activeSlug = path.startsWith('/category/') ? path.split('/')[2] || '' : '';
+const homeActive = path === '/';
 ---
 
 {
@@ -60,11 +63,10 @@ const categories = getCategoriesWithContent();
               <span class="surprise-btn-inner">Surprise me</span>
             </button>
 
-            <button
-              type="button"
-              class="category-nav-item is-active"
-              data-category="All"
-              aria-pressed="true"
+            <a
+              href="/"
+              class:list={['category-nav-item no-underline', homeActive && 'is-active']}
+              aria-current={homeActive ? 'page' : undefined}
             >
               <span class="flex min-w-0 items-center gap-3">
                 <span class="category-icon-wrap">
@@ -72,23 +74,26 @@ const categories = getCategoriesWithContent();
                 </span>
                 <span class="truncate">All Games</span>
               </span>
-            </button>
+            </a>
 
-            {categories.map((cat) => (
-              <button
-                type="button"
-                class="category-nav-item"
-                data-category={cat.name}
-                aria-pressed="false"
-              >
-                <span class="flex min-w-0 items-center gap-3">
-                  <span class="category-icon-wrap">
-                    <CategoryIcon name={cat.name} class="h-8 w-8" />
+            {categories.map((cat) => {
+              const slug = categorySlug(cat.name);
+              const on = slug === activeSlug;
+              return (
+                <a
+                  href={categoryPath(cat.name)}
+                  class:list={['category-nav-item no-underline', on && 'is-active']}
+                  aria-current={on ? 'page' : undefined}
+                >
+                  <span class="flex min-w-0 items-center gap-3">
+                    <span class="category-icon-wrap">
+                      <CategoryIcon name={cat.name} class="h-8 w-8" />
+                    </span>
+                    <span class="truncate">{cat.name}</span>
                   </span>
-                  <span class="truncate">{cat.name}</span>
-                </span>
-              </button>
-            ))}
+                </a>
+              );
+            })}
           </nav>
         </div>
 
