@@ -542,6 +542,25 @@
   }
 }
 
+/* Play frame: stay inside the phone width even when aspect-ratio + max-height interact */
+.game-frame-wrap {
+  width: 100%;
+  min-height: 200px;
+  max-height: min(70dvh, 75vh);
+  /* When max-height caps the box, also shrink width so it does not slide off-screen */
+  max-width: min(100%, calc(min(70dvh, 75vh) * var(--game-w, 16) / var(--game-h, 9)));
+  margin-inline: auto;
+}
+
+.game-frame-wrap iframe,
+.game-frame-wrap #click-to-play {
+  max-width: 100%;
+}
+
+.game-stage {
+  overflow-x: hidden;
+}
+
 /* Theater mode: expand play area */
 body.theater-mode .site-chrome {
   display: none;
@@ -550,15 +569,28 @@ body.theater-mode .site-chrome {
 body.theater-mode .game-stage {
   max-width: 100% !important;
   padding: 0 !important;
+  overflow-x: hidden;
 }
 
 body.theater-mode .game-frame-wrap {
   border-radius: 0 !important;
-  min-height: calc(100vh - 3.5rem);
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: none !important;
+  min-height: calc(100dvh - 3.5rem);
+  aspect-ratio: auto !important;
 }
 
 body.theater-mode .theater-bar {
   display: flex !important;
+}
+
+@media (max-width: 639px) {
+  .game-frame-wrap {
+    min-height: 180px;
+    max-height: min(62dvh, 70vh);
+    max-width: min(100%, calc(min(62dvh, 70vh) * var(--game-w, 16) / var(--game-h, 9)));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

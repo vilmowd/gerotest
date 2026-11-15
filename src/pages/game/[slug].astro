@@ -35,6 +35,20 @@ const moreFun = getPopularGames(7, (Number.parseInt(game.id, 10) || 0) + 11).fil
 
 const embedOk = isSafeEmbedUrl(game.url);
 const thumbOk = isSafeImageUrl(game.thumb) ? game.thumb : '/og-default.jpg';
+/** Clamp absurd feed sizes so the play frame cannot overflow the phone viewport */
+function safeFrameSize(w: number, h: number) {
+  let width = Number(w) || 16;
+  let height = Number(h) || 9;
+  if (width < 16 || width > 3840) width = 16;
+  if (height < 9 || height > 2160) height = 9;
+  const ratio = width / height;
+  if (ratio > 2.6 || ratio < 0.4) {
+    width = 16;
+    height = 9;
+  }
+  return { width, height };
+}
+const frameSize = safeFrameSize(game.width, game.height);
 let embedHost = '';
 try {
   if (embedOk) embedHost = new URL(game.url).hostname;
@@ -89,19 +103,19 @@ const jsonLd = {
     </button>
   </div>
 
-  <div class="container-arcade game-stage py-4 sm:py-6">
+  <div class="container-arcade game-stage max-w-full overflow-x-hidden py-4 sm:py-6">
     <nav class="mb-3 text-xs text-arcade-muted sm:mb-4 sm:text-sm" aria-label="Breadcrumb">
-      <ol class="flex flex-wrap items-center gap-2">
+      <ol class="flex min-w-0 flex-wrap items-center gap-2">
         <li><a href="/" class="hover:text-arcade-accent">Home</a></li>
         <li aria-hidden="true">/</li>
         <li><span class="text-arcade-accent">{game.category}</span></li>
         <li aria-hidden="true">/</li>
-        <li class="truncate text-white">{game.title}</li>
+        <li class="min-w-0 truncate text-white">{game.title}</li>
       </ol>
     </nav>
 
-    <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_320px]">
-      <div class="min-w-0">
+    <div class="grid w-full max-w-full gap-5 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div class="min-w-0 max-w-full">
         <div
           id="played-meta"
           class="hidden"
@@ -166,8 +180,8 @@ const jsonLd = {
 
         <div
           id="game-frame-wrap"
-          class="game-frame-wrap relative overflow-hidden rounded-xl border border-arcade-border bg-black"
-          style={`aspect-ratio: ${game.width} / ${game.height}; max-height: min(75vh, 85dvh); min-height: 220px;`}
+          class="game-frame-wrap relative mx-auto w-full max-w-full overflow-hidden rounded-xl border border-arcade-border bg-black"
+          style={`--game-w: ${frameSize.width}; --game-h: ${frameSize.height}; aspect-ratio: var(--game-w) / var(--game-h);`}
           data-game-loader
           data-embed-ok={embedOk ? '1' : '0'}
         >
