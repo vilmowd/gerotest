@@ -389,13 +389,22 @@ export function initCategoryUI() {
     }
   }
 
-  function renderCatalogPage() {
+  function renderCatalogPage(opts?: { appendFrom?: number }) {
     if (!grid || !catalogReady) {
       updateCatalogChrome(activeCategory !== 'All' || Boolean((search?.value || '').trim()));
       return;
     }
     const slice = filteredGames.slice(0, shownCount);
-    grid.innerHTML = slice.map(catalogCardHtml).join('');
+    const appendFrom = opts?.appendFrom;
+    if (typeof appendFrom === 'number' && appendFrom > 0 && appendFrom < slice.length) {
+      const frag = document.createDocumentFragment();
+      const wrap = document.createElement('div');
+      wrap.innerHTML = slice.slice(appendFrom).map(catalogCardHtml).join('');
+      while (wrap.firstChild) frag.appendChild(wrap.firstChild);
+      grid.appendChild(frag);
+    } else {
+      grid.innerHTML = slice.map(catalogCardHtml).join('');
+    }
     if (catalogPlaceholder) catalogPlaceholder.hidden = true;
     const filtering = activeCategory !== 'All' || Boolean((search?.value || '').trim());
     updateCatalogChrome(filtering);
@@ -440,7 +449,7 @@ export function initCategoryUI() {
     }
     updateCatalogChrome(false);
 
-    return fetch('/games-index.json', { credentials: 'same-origin' })
+    return fetch('/games-index.json', { credentials: 'same-origin', cache: 'force-cache' })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error('index'))))
       .then((data: { games?: CatalogGame[] }) => {
         const list = Array.isArray(data?.games) ? data.games : [];
@@ -466,9 +475,13 @@ export function initCategoryUI() {
       });
   }
 
-  search?.addEventListener('input', () =>
-    applyFilters({ scroll: false, resetPage: true, activate: true }),
-  );
+  let searchTimer = 0;
+  search?.addEventListener('input', () => {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => {
+      applyFilters({ scroll: false, resetPage: true, activate: true });
+    }, 180);
+  });
   search?.setAttribute('aria-controls', 'games-grid');
 
   pills.forEach((pill) => {
@@ -490,8 +503,9 @@ export function initCategoryUI() {
 
   loadMoreBtn?.addEventListener('click', () => {
     if (!catalogReady) return;
+    const prev = shownCount;
     shownCount += stepSize;
-    renderCatalogPage();
+    renderCatalogPage({ appendFrom: prev });
   });
 
   document.addEventListener('keydown', (e) => {

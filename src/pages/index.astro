@@ -12,22 +12,22 @@ import {
 import { siteConfig } from '../data/site';
 import AdUnit from '../components/AdUnit.astro';
 
-/** Counts divisible by 2/4/6/8 so card rows stay full across breakpoints */
-const ROW = 24;
+/** Keep browse rows light (divisible by 2/4/8) — full catalog is lazy-loaded below */
+const ROW = 8;
 
 const trending = getTrendingGames(1)[0] ?? allGames[0];
 const heroBanners = getPopularGames(3, 0);
 const popularBanners = getPopularGames(2, 3);
 const popularCards = getPopularGames(ROW, 5);
 const featured = getTrendingGames(ROW);
-const topCategories = getTopCategories(6);
+const topCategories = getTopCategories(3);
 const categoryRows = topCategories
   .map((cat) => ({
     ...cat,
     games: getPopularInCategory(cat.name, ROW + 1),
   }))
-  .filter((row) => row.games.length >= 9);
-const morePopular = getPopularGames(8, 29);
+  .filter((row) => row.games.length >= 5);
+const morePopular = getPopularGames(4, 29);
 const games = allGames;
 /** Catalog loads when scrolled into view: 80 first, then +40 via Load more */
 const CATALOG_INITIAL = 80;
@@ -202,7 +202,7 @@ const jsonLd = {
         }
         <div class="games-row-grid mt-3">
           {popularCards.map((game) => (
-            <GameCard game={game} filterable={false} />
+            <GameCard game={game} filterable={false} compact />
           ))}
         </div>
       </section>
@@ -220,7 +220,7 @@ const jsonLd = {
         </div>
         <div class="games-row-grid">
           {featured.map((game) => (
-            <GameCard game={game} filterable={false} />
+            <GameCard game={game} filterable={false} compact />
           ))}
         </div>
       </section>
@@ -242,7 +242,7 @@ const jsonLd = {
         </div>
         <div class="games-row-grid">
           {row.games.slice(1, ROW + 1).map((game) => (
-            <GameCard game={game} filterable={false} />
+            <GameCard game={game} filterable={false} compact />
           ))}
         </div>
       </section>
