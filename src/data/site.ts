@@ -27,6 +27,8 @@ export const siteConfig = {
    * Leave empty / placeholder until configured — GA will not load.
    */
   googleAnalyticsId: 'G-XXXXXXXXXX',
+  /** Google Tag Manager container, loaded on every page */
+  gtmId: 'GTM-TLGTJ44C',
   gamemonetizeId: 'YOUR_GAMEMONETIZE_PUBLISHER_ID',
   /** Audience positioning for policy & COPPA alignment */
   audience: 'general',

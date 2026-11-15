@@ -1,4 +1,5 @@
 ---
+import { siteConfig } from '../data/site';
 import { getAdSenseClient, isAdSenseConfigured } from '../lib/adsense';
 import { getGoogleAnalyticsId, isGoogleAnalyticsConfigured } from '../lib/analytics';
 
@@ -6,6 +7,8 @@ const adsenseOn = isAdSenseConfigured();
 const gaOn = isGoogleAnalyticsConfigured();
 const client = getAdSenseClient();
 const gaId = getGoogleAnalyticsId();
+const gtmId = (siteConfig.gtmId || '').trim();
+const gtmOn = /^GTM-[A-Z0-9]+$/i.test(gtmId);
 ---
 
 {
@@ -13,10 +16,10 @@ const gaId = getGoogleAnalyticsId();
 }
 
 {
-  (adsenseOn || gaOn) && (
+  (adsenseOn || gaOn || gtmOn) && (
     <script
       is:inline
-      define:vars={{ gaId, adsenseOn, gaOn }}
+      define:vars={{ gaId, adsenseOn, gaOn, gtmId }}
     >
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -35,7 +38,27 @@ const gaId = getGoogleAnalyticsId();
       });
       gtag('set', 'ads_data_redaction', true);
       gtag('set', 'url_passthrough', true);
-      window.__gfTracking = { gaId: gaId || '', adsenseOn: !!adsenseOn, gaOn: !!gaOn };
+      window.__gfTracking = {
+        gaId: gaId || '',
+        gtmId: gtmId || '',
+        adsenseOn: !!adsenseOn,
+        gaOn: !!gaOn,
+      };
     </script>
+  )
+}
+
+{
+  gtmOn && (
+    <>
+      <script is:inline async src={`https://www.googletagmanager.com/gtm.js?id=${gtmId}`}></script>
+      <script is:inline>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+      </script>
+    </>
   )
 }

@@ -4,7 +4,7 @@ import { siteConfig } from '../data/site';
 import { isAdSenseConfigured } from '../lib/adsense';
 import { isGoogleAnalyticsConfigured } from '../lib/analytics';
 
-const updated = '2026-03-15';
+const updated = '2026-11-15';
 const siteUrl = siteConfig.url;
 const adsenseStatus = isAdSenseConfigured()
   ? 'configured and loaded only after you Accept all in the cookie popup'
@@ -167,7 +167,8 @@ const gaStatus = isGoogleAnalyticsConfigured()
       <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener noreferrer" target="_blank">
         Google Analytics Opt-out
       </a>
-      . If you choose <strong>Reject non-essential</strong>, we do not load Google Analytics from our pages.
+      . The Google tag (<code>{siteConfig.gtmId}</code>) is included on each page. If you choose{' '}
+      <strong>Reject non-essential</strong>, analytics storage stays denied, so analytics cookies are not set.
     </p>
 
     <h3>4.6 Embedded games</h3>
@@ -234,7 +235,7 @@ const gaStatus = isGoogleAnalyticsConfigured()
     </p>
     <ul>
       <li><strong>Accept all</strong> — enable Google AdSense and Google Analytics cookies/scripts as configured</li>
-      <li><strong>Reject non-essential</strong> — keep essential storage only; AdSense/GA scripts are not loaded by us</li>
+      <li><strong>Reject non-essential</strong> — keep essential storage only; advertising and analytics storage stay denied</li>
       <li>Change your mind later using <strong>Cookie settings</strong> in the footer</li>
       <li>Clear cookies and site data in your browser</li>
     </ul>
