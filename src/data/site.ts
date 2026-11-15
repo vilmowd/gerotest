@@ -16,7 +16,7 @@ export const siteConfig = {
    * Google AdSense client ID, e.g. ca-pub-1234567890123456
    * Leave the placeholder until you have a real ID — ad code will not load.
    */
-  adsenseClient: 'ca-pub-XXXXXXXXXXXXXXXX',
+  adsenseClient: 'ca-pub-1566573312352415',
   /** Optional AdSense ad unit slot IDs from your AdSense → Ads → Ad units */
   adsenseSlots: {
     gameSidebar: '',

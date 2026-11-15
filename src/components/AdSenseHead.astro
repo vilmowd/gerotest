@@ -16,6 +16,17 @@ const gtmOn = /^GTM-[A-Z0-9]+$/i.test(gtmId);
 }
 
 {
+  adsenseOn && (
+    <script
+      is:inline
+      async
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
+      crossorigin="anonymous"
+    />
+  )
+}
+
+{
   (adsenseOn || gaOn || gtmOn) && (
     <script
       is:inline

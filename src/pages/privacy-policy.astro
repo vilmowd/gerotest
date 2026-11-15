@@ -7,7 +7,7 @@ import { isGoogleAnalyticsConfigured } from '../lib/analytics';
 const updated = '2026-11-15';
 const siteUrl = siteConfig.url;
 const adsenseStatus = isAdSenseConfigured()
-  ? 'configured and loaded only after you Accept all in the cookie popup'
+  ? 'the AdSense script is on each page; ad cookies stay off until you Accept all'
   : 'prepared in our code; it will activate after you add a real publisher ID and a visitor accepts cookies';
 const gaStatus = isGoogleAnalyticsConfigured()
   ? 'configured and loaded only after you Accept all in the cookie popup'
@@ -144,7 +144,7 @@ const gaStatus = isGoogleAnalyticsConfigured()
     </p>
     <p>
       Ad units on our pages are labeled “Advertisement” and placed outside the primary play area. We do not ask you
-      to click ads. If you choose <strong>Reject non-essential</strong>, we do not load AdSense scripts from our pages.
+      to click ads. The AdSense script is included on each page. If you choose <strong>Reject non-essential</strong>, advertising storage stays denied.
     </p>
 
     <h3>4.5 Google Analytics</h3>
