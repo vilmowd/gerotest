@@ -223,6 +223,16 @@ const jsonLd = {
                   data-game-iframe
                   data-src={game.url}
                 ></iframe>
+                <div
+                  id="game-unavailable"
+                  class="absolute inset-0 z-[7] hidden flex flex-col items-center justify-center gap-3 bg-arcade-bg/95 p-6 text-center"
+                >
+                  <p class="font-display text-xl font-bold text-white">This game is unavailable</p>
+                  <p class="max-w-sm text-sm text-arcade-muted">
+                    The host did not respond. Try again, or pick a similar game below.
+                  </p>
+                  <button type="button" class="btn btn-accent" id="game-retry">Try again</button>
+                </div>
               </>
             ) : (
               <div class="absolute inset-0 z-[6] flex flex-col items-center justify-center gap-3 p-6 text-center">
@@ -386,29 +396,53 @@ const jsonLd = {
     const iframe = document.querySelector<HTMLIFrameElement>('[data-game-iframe]');
     const loaderUi = document.querySelector<HTMLElement>('[data-game-loader-ui]');
     const playBtn = document.getElementById('click-to-play');
+    const unavailable = document.getElementById('game-unavailable');
+    const retryBtn = document.getElementById('game-retry');
     const fsBtn = document.getElementById('fullscreen-btn');
     const theaterToggles = document.querySelectorAll('[data-theater-toggle]');
+    let loadTimer = 0;
+    let attempt = 0;
 
-    const finishLoad = () => {
+    const finishLoad = (id: number) => {
+      if (id !== attempt) return;
+      window.clearTimeout(loadTimer);
+      unavailable?.classList.add('hidden');
       wrap.classList.remove('is-loading');
       iframe?.classList.remove('hidden');
       loaderUi?.classList.add('opacity-0');
       window.setTimeout(() => loaderUi?.classList.add('hidden'), 400);
     };
 
+    const showUnavailable = (id: number) => {
+      if (id !== attempt) return;
+      attempt += 1;
+      window.clearTimeout(loadTimer);
+      if (iframe) iframe.src = 'about:blank';
+      iframe?.classList.add('hidden');
+      loaderUi?.classList.add('hidden', 'opacity-0');
+      wrap.classList.remove('is-loading', 'media-skel');
+      unavailable?.classList.remove('hidden');
+    };
+
     const startGame = () => {
       if (!iframe) return;
       const src = iframe.dataset.src || '';
       if (!isSafeHttps(src)) return;
+      const id = ++attempt;
+      window.clearTimeout(loadTimer);
       playBtn?.classList.add('hidden');
+      unavailable?.classList.add('hidden');
       loaderUi?.classList.remove('hidden', 'opacity-0');
       wrap.classList.add('is-loading', 'media-skel');
-      iframe.addEventListener('load', finishLoad, { once: true });
-      window.setTimeout(finishLoad, 4000);
+      iframe.classList.add('hidden');
+      iframe.addEventListener('load', () => finishLoad(id), { once: true });
+      iframe.addEventListener('error', () => showUnavailable(id), { once: true });
+      loadTimer = window.setTimeout(() => showUnavailable(id), 18000);
       iframe.src = src;
     };
 
     playBtn?.addEventListener('click', startGame);
+    retryBtn?.addEventListener('click', startGame);
 
     fsBtn?.addEventListener('click', async () => {
       try {

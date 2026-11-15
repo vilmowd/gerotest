@@ -714,6 +714,81 @@ async function fetchFromPorted2Browser(usedSlugs) {
     .filter(Boolean);
 }
 
+const LINK_TIMEOUT_MS = Number(process.env.LINK_CHECK_TIMEOUT_MS || 8000);
+const LINK_CONCURRENCY = Math.max(1, Number(process.env.LINK_CHECK_CONCURRENCY || 24));
+const LINK_CHECK_UA =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+
+function isDeadEmbedStatus(status) {
+  return status === 404 || status === 410 || status === 451 || status >= 500;
+}
+
+async function requestEmbed(url, method) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), LINK_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      method,
+      redirect: 'follow',
+      signal: controller.signal,
+      headers: {
+        Accept: 'text/html,application/xhtml+xml,*/*',
+        'User-Agent': LINK_CHECK_UA,
+      },
+    });
+    try {
+      await res.body?.cancel();
+    } catch {
+      /* body already consumed */
+    }
+    return res.status;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** True when the embed host answers. 403/429 stay — many CDNs block datacenter checks. */
+async function embedHostAlive(url) {
+  try {
+    let status = await requestEmbed(url, 'HEAD');
+    if (status === 405 || status === 501) status = await requestEmbed(url, 'GET');
+    return !isDeadEmbedStatus(status);
+  } catch {
+    return false;
+  }
+}
+
+async function dropDeadEmbeds(games) {
+  if (process.env.SKIP_LINK_CHECK === '1') {
+    console.log('Skipping dead-link check (SKIP_LINK_CHECK=1).');
+    return games;
+  }
+  if (!games.length) return games;
+
+  console.log(
+    `Checking ${games.length} embed hosts (${LINK_CONCURRENCY} at a time, ${LINK_TIMEOUT_MS}ms timeout)…`,
+  );
+  let finished = 0;
+  const checked = await mapPool(games, LINK_CONCURRENCY, async (game) => {
+    const alive = await embedHostAlive(game.url);
+    finished += 1;
+    if (finished % 100 === 0 || finished === games.length) {
+      console.log(`  …${finished}/${games.length}`);
+    }
+    return alive ? game : null;
+  });
+  const alive = checked.filter(Boolean);
+  const removed = games.length - alive.length;
+  if (games.length >= 20 && removed / games.length > 0.8) {
+    console.warn(
+      `Link check rejected ${removed}/${games.length}. Keeping the full catalog so a blocked probe cannot wipe it.`,
+    );
+    return games;
+  }
+  console.log(`Removed ${removed} unreachable embeds (${alive.length} kept).`);
+  return alive;
+}
+
 function dedupeByUrl(games) {
   const seen = new Set();
   const out = [];
@@ -789,6 +864,12 @@ async function main() {
   games = dedupeByUrl(games)
     .filter((g) => isHttpsUrl(g.url))
     .slice(0, CATALOG_MAX);
+
+  if (source !== 'mock') {
+    games = await dropDeadEmbeds(games);
+  } else {
+    console.log('Skipping dead-link check for the offline mock catalog.');
+  }
 
   const payload = {
     generatedAt: new Date().toISOString(),
