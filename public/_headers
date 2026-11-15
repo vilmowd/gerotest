@@ -1,0 +1,49 @@
+# Cloudflare Pages security + cache headers
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(self "https:"), autoplay=(self "https:"), camera=(), display-capture=(), encrypted-media=(self "https:"), fullscreen=(self "https:"), gamepad=(self "https:"), geolocation=(), gyroscope=(self "https:"), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(self "https:"), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), xr-spatial-tracking=(), interest-cohort=(), browsing-topics=()
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Cross-Origin-Resource-Policy: same-site
+  Origin-Agent-Cluster: ?1
+  X-DNS-Prefetch-Control: on
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com https://www.googletagmanager.com https://www.google.com https://www.gstatic.com https://partner.googleadservices.com https://fundingchoicesmessages.google.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://www.gstatic.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com https://www.gstatic.com; connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.google.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://fundingchoicesmessages.google.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google; media-src 'self' https: blob:; worker-src 'self' blob:; child-src 'self' https: blob:; frame-src https:; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# Hashed Astro/Vite assets — immutable long cache
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Brand / static images
+/*.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.jpg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.jpeg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.svg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# HTML always revalidated so catalog/security updates ship fast
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/games-index.json
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+  X-Content-Type-Options: nosniff
+
+/.well-known/*
+  Cache-Control: public, max-age=86400

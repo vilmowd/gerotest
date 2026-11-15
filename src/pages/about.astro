@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+---
+
+<BaseLayout
+  title="About"
+  description={`About ${siteConfig.name}: a family-oriented HTML5 game portal with curation, guides, and clear policies.`}
+  showSearch={false}
+>
+  <article class="container-arcade prose-arcade legal-doc w-full max-w-4xl py-8 sm:py-10">
+    <h1 class="font-display text-3xl font-bold text-white">About {siteConfig.name}</h1>
+    <p class="mt-4 text-arcade-muted leading-relaxed">
+      {siteConfig.name} is a lightweight, fully static browser game portal operated by {siteConfig.legalName}.
+      We help people discover free HTML5 games through search, categories, continue-playing tools on your device,
+      and short how-to notes—so you can play in the browser without installing an app-store client.
+    </p>
+
+    <h2>Our mission</h2>
+    <p>
+      Deliver a fast, accessible, family-oriented discovery experience that works on phones, tablets, and desktops.
+      The Site is generated as plain HTML and hosted on CDNs such as Cloudflare Pages or GitHub Pages.
+    </p>
+
+    <h2>How we add value</h2>
+    <ul>
+      <li>Organized categories and search across a curated catalog</li>
+      <li>Per-game pages with controls guidance, similar titles, and click-to-play loading</li>
+      <li>Original help content (FAQ, policies, accessibility information) beyond raw feed dumps</li>
+      <li>Client-only continue/favorites tools stored in your browser</li>
+      <li>Content screens intended to reduce adult, port/piracy-style, and other high-risk inventory</li>
+    </ul>
+
+    <h2>Where games come from</h2>
+    <p>
+      Titles are aggregated from public HTML5 distribution feeds (such as GameMonetize and GameArter), then
+      normalized into a local catalog and filtered against our Content Policy. Each game remains the intellectual
+      property of its original publisher or developer. Embedded games may include their own advertising or branding
+      inside the sandboxed play frame.
+    </p>
+
+    <h2>Advertising</h2>
+    <p>
+      We may display third-party advertisements (for example Google AdSense) in clearly labeled slots outside the
+      game viewport. See our <a href="/privacy-policy/">Privacy Policy</a> and{' '}
+      <a href="/content-policy/">Content Policy</a>.
+    </p>
+
+    <h2>Accessibility</h2>
+    <p>
+      We aim to meet WCAG 2.2 Level AA where practical for a static entertainment site. Read our{' '}
+      <a href="/accessibility/">Accessibility Statement</a> for details and how to report barriers.
+    </p>
+
+    <h2>Copyright</h2>
+    <p>
+      See our <a href="/dmca/">DMCA / Copyright Policy</a> for intellectual property notices.
+    </p>
+  </article>
+</BaseLayout>

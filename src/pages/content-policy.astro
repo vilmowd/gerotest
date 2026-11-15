@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+
+const updated = '2026-03-15';
+---
+
+<BaseLayout
+  title="Content Policy"
+  description={`Family-oriented content standards for games and pages on ${siteConfig.name}.`}
+  showSearch={false}
+>
+  <article class="container-arcade prose-arcade legal-doc w-full max-w-4xl py-8 sm:py-10">
+    <h1 class="font-display text-3xl font-bold text-white">Content Policy</h1>
+    <p class="mt-2 text-sm text-arcade-muted">
+      Effective / last updated: <time datetime={updated}>{updated}</time>
+    </p>
+
+    <p class="mt-4 rounded-lg border border-arcade-border/60 bg-arcade-card/80 p-4 text-sm text-arcade-muted">
+      {siteConfig.name} is a <strong class="text-white">family-oriented, general-audience</strong> HTML5 game
+      discovery site. We organize free browser games, provide navigation and how-to guidance, and apply automated
+      and manual screens intended to reduce inappropriate inventory. This Policy explains what we allow, what we
+      try to exclude, and how advertising is handled.
+    </p>
+
+    <h2>1. Audience</h2>
+    <p>
+      The Site is not directed to children under {siteConfig.minimumRecommendedAge}. Parents and guardians should
+      supervise younger players. Individual third-party games may still include mild cartoon violence, competitive
+      play, or themes that are not appropriate for every age—use judgment when choosing titles.
+    </p>
+
+    <h2>2. What we allow</h2>
+    <ul>
+      <li>Free-to-play HTML5 / browser games suitable for a broad family audience</li>
+      <li>Clear titles, thumbnails, categories, instructions, and editorial help text</li>
+      <li>Third-party embeds when a public HTTPS play URL is provided by a distribution network or publisher</li>
+    </ul>
+
+    <h2>3. What we try to exclude</h2>
+    <ul>
+      <li>Pornography, sexual content, and nudity</li>
+      <li>Content that promotes real-world illegal drug use, extreme gore, or graphic torture</li>
+      <li>Real-money gambling / casino mechanics</li>
+      <li>Listings that appear to be unauthorized copyrighted full-game ports, ROM dumps, or piracy hubs</li>
+      <li>Malware, phishing, or deceptive “download this to play” traps on our own pages</li>
+      <li>Content that primarily exists to manipulate ads or violate advertising program policies</li>
+    </ul>
+    <p>
+      Filtering is imperfect. We periodically review the catalog and may remove titles that violate this Policy.
+    </p>
+
+    <h2>4. Advertising standards</h2>
+    <p>
+      When Google AdSense or similar networks are enabled:
+    </p>
+    <ul>
+      <li>Ad units are labeled “Advertisement”</li>
+      <li>Ads are placed outside the primary play button and game frame</li>
+      <li>We do not ask visitors to click ads or promise rewards for clicking ads</li>
+      <li>We do not place our ads in a way intended to trick accidental clicks</li>
+    </ul>
+    <p>
+      Embedded games may show their own third-party ads inside the sandboxed frame under the host’s control.
+    </p>
+
+    <h2>5. Intellectual property</h2>
+    <p>
+      We do not claim ownership of third-party games. Copyright complaints are handled under our{' '}
+      <a href="/dmca/">DMCA / Copyright Policy</a>.
+    </p>
+
+    <h2>6. Enforcement</h2>
+    <p>
+      We may remove listings, block categories, or update filters at our discretion to protect users, comply with
+      law, or meet advertising-partner requirements. Enforcement does not create a duty to monitor every embed in
+      real time.
+    </p>
+
+  </article>
+</BaseLayout>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 96" role="img" aria-label="Geroforge">
+  <defs>
+    <linearGradient id="padGrad" x1="64" y1="14" x2="64" y2="86" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="55%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <mask id="padMask" maskUnits="userSpaceOnUse">
+      <rect width="128" height="96" fill="#000"/>
+      <!-- Modern controller body -->
+      <path
+        fill="#fff"
+        d="M28 30c0-8 6-14 14-14h44c8 0 14 6 14 14v6c0 3 1 6 3 8l9 12c2.4 3.2.2 8-3.8 8H86c-3.2 0-6-1.8-7.4-4.6L74 64H54l-4.6 7.4C48 74.2 45.2 76 42 76H23.8c-4 0-6.2-4.8-3.8-8l9-12c2-2 3-5 3-8v-6z"
+      />
+      <!-- D-pad cutout -->
+      <rect x="34" y="38" width="16" height="5.5" rx="2.2" fill="#000"/>
+      <rect x="39.25" y="32.75" width="5.5" height="16" rx="2.2" fill="#000"/>
+      <!-- Four face buttons -->
+      <circle cx="78" cy="34.5" r="3.4" fill="#000"/>
+      <circle cx="78" cy="47.5" r="3.4" fill="#000"/>
+      <circle cx="71.5" cy="41" r="3.4" fill="#000"/>
+      <circle cx="84.5" cy="41" r="3.4" fill="#000"/>
+    </mask>
+  </defs>
+  <rect width="128" height="96" fill="url(#padGrad)" mask="url(#padMask)"/>
+</svg>

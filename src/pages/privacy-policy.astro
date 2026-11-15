@@ -1,0 +1,304 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+import { isAdSenseConfigured } from '../lib/adsense';
+import { isGoogleAnalyticsConfigured } from '../lib/analytics';
+
+const updated = '2026-03-15';
+const siteUrl = siteConfig.url;
+const adsenseStatus = isAdSenseConfigured()
+  ? 'configured and loaded only after you Accept all in the cookie popup'
+  : 'prepared in our code; it will activate after you add a real publisher ID and a visitor accepts cookies';
+const gaStatus = isGoogleAnalyticsConfigured()
+  ? 'configured and loaded only after you Accept all in the cookie popup'
+  : 'prepared in our code; it will activate after you add a real Measurement ID and a visitor accepts cookies';
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description={`Privacy Policy for ${siteConfig.name}: what data we collect, cookies, Google AdSense, Google Analytics, and your choices.`}
+  showSearch={false}
+>
+  <article class="container-arcade prose-arcade legal-doc w-full max-w-4xl py-8 sm:py-10">
+    <h1 class="font-display text-3xl font-bold text-white">Privacy Policy</h1>
+    <p class="mt-2 text-sm text-arcade-muted">
+      Effective / last updated: <time datetime={updated}>{updated}</time>
+    </p>
+    <p class="mt-4 rounded-lg border border-arcade-border/60 bg-arcade-card/80 p-4 text-sm text-arcade-muted">
+      This Policy describes how <strong class="text-white">{siteConfig.legalName}</strong> (“we”, “us”, or “our”)
+      collects, uses, stores, and shares information when you visit{' '}
+      <a href={siteUrl}>{siteUrl}</a> (the “Site”). We use a cookie popup so you can
+      <strong class="text-white"> Accept all</strong> (cookies + Google AdSense + Google Analytics) or
+      <strong class="text-white"> Reject non-essential</strong> (essential storage only). If you do not agree with
+      this Policy, please do not use the Site.
+    </p>
+
+    <h2>1. Who we are</h2>
+    <p>
+      Controller / operator: <strong>{siteConfig.legalName}</strong><br />
+      Website: <a href={siteUrl}>{siteUrl}</a>
+    </p>
+
+    <h2>2. Scope &amp; audience</h2>
+    <p>
+      The Site is a <strong>general-audience, family-oriented</strong> entertainment portal. It is
+      <strong> not directed to children under 13</strong>. Parents and guardians should supervise younger users.
+      See our <a href="/content-policy/">Content Policy</a>.
+    </p>
+
+    <h2>3. Summary of technologies we use</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[36rem] border-collapse text-left text-sm">
+        <thead>
+          <tr class="border-b border-arcade-border/60 text-white">
+            <th class="py-2 pr-3 font-semibold">Technology</th>
+            <th class="py-2 pr-3 font-semibold">Purpose</th>
+            <th class="py-2 font-semibold">When it runs</th>
+          </tr>
+        </thead>
+        <tbody class="text-arcade-muted">
+          <tr class="border-b border-arcade-border/40 align-top">
+            <td class="py-2 pr-3 text-white">Essential site storage</td>
+            <td class="py-2 pr-3">Consent choice, UI preferences, continue playing, favorites</td>
+            <td class="py-2">Always (needed for the Site to work as offered)</td>
+          </tr>
+          <tr class="border-b border-arcade-border/40 align-top">
+            <td class="py-2 pr-3 text-white">Hosting / CDN logs</td>
+            <td class="py-2 pr-3">Security, delivery, abuse prevention (IP, user-agent, URLs)</td>
+            <td class="py-2">Automatically when pages are requested</td>
+          </tr>
+          <tr class="border-b border-arcade-border/40 align-top">
+            <td class="py-2 pr-3 text-white">Google AdSense</td>
+            <td class="py-2 pr-3">Display ads; may use cookies for delivery and personalization</td>
+            <td class="py-2">Only after “Accept all” ({adsenseStatus})</td>
+          </tr>
+          <tr class="border-b border-arcade-border/40 align-top">
+            <td class="py-2 pr-3 text-white">Google Analytics (GA4)</td>
+            <td class="py-2 pr-3">Measure traffic and improve the Site</td>
+            <td class="py-2">Only after “Accept all” ({gaStatus})</td>
+          </tr>
+          <tr class="align-top">
+            <td class="py-2 pr-3 text-white">Third-party game embeds</td>
+            <td class="py-2 pr-3">Play the selected game; hosts may set their own cookies/ads</td>
+            <td class="py-2">Only after you click “Click to play”</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>4. Information we collect</h2>
+    <h3>4.1 Information you provide</h3>
+    <ul>
+      <li>We do not operate a contact form. We do not ask you to submit personal details to use the Site.</li>
+      <li>If you send us correspondence (for example a copyright notice), we process what you choose to include</li>
+    </ul>
+
+    <h3>4.2 Information collected automatically (server / CDN)</h3>
+    <p>When your browser requests a page, our hosting or CDN provider may process:</p>
+    <ul>
+      <li>IP address and approximate location derived from IP</li>
+      <li>Browser type, device type, operating system, language</li>
+      <li>Requested URL, referring URL, date/time, and basic diagnostic / security logs</li>
+    </ul>
+
+    <h3>4.3 Information stored on your device (first-party)</h3>
+    <ul>
+      <li>
+        <code>gf-cookie-consent</code> / <code>gf-cookie-consent-ts</code> — your cookie choice and when you made it
+      </li>
+      <li><code>gf-recent-plays</code> — games you opened (continue playing)</li>
+      <li><code>gf-favorites</code> — games you saved</li>
+      <li><code>gf-sidebar-collapsed</code> — category menu layout preference</li>
+    </ul>
+    <p>These items stay in your browser until you clear site data. We do not sync them to our own database.</p>
+
+    <h3>4.4 Google AdSense (advertising)</h3>
+    <p>
+      We use or intend to use <strong>Google AdSense</strong> to show advertisements on the Site. When you
+      <strong> Accept all</strong>, Google and its partners may collect or receive identifiers and activity data
+      such as:
+    </p>
+    <ul>
+      <li>Cookie / device identifiers</li>
+      <li>IP address and approximate location</li>
+      <li>Browser and device information</li>
+      <li>Pages viewed on this Site and ad interaction events</li>
+      <li>Information used to personalize or measure ads (when personalization is allowed)</li>
+    </ul>
+    <p>
+      Google’s use of advertising cookies enables it and its partners to serve ads based on your visit to this Site
+      and/or other sites. Learn more:{' '}
+      <a href="https://policies.google.com/technologies/partner-sites" rel="noopener noreferrer" target="_blank">
+        How Google uses information from sites or apps that use its services
+      </a>
+      .
+    </p>
+    <p>
+      Opt out of personalized ads:{' '}
+      <a href="https://www.google.com/settings/ads" rel="noopener noreferrer" target="_blank">Google Ads Settings</a>
+      {' · '}
+      <a href="https://www.aboutads.info/choices/" rel="noopener noreferrer" target="_blank">aboutads.info</a>
+      {' · '}
+      <a href="https://www.youronlinechoices.eu/" rel="noopener noreferrer" target="_blank">youronlinechoices.eu</a>
+      (EEA).
+    </p>
+    <p>
+      Ad units on our pages are labeled “Advertisement” and placed outside the primary play area. We do not ask you
+      to click ads. If you choose <strong>Reject non-essential</strong>, we do not load AdSense scripts from our pages.
+    </p>
+
+    <h3>4.5 Google Analytics</h3>
+    <p>
+      We use or intend to use <strong>Google Analytics 4</strong> to understand how the Site is used. When you
+      <strong> Accept all</strong>, Google Analytics may process:
+    </p>
+    <ul>
+      <li>Online identifiers (including cookie identifiers)</li>
+      <li>IP address (we configure IP anonymization where supported)</li>
+      <li>Device / browser information</li>
+      <li>Pages viewed, referring sites, approximate geographic region, and engagement metrics</li>
+    </ul>
+    <p>
+      Google Analytics privacy information:{' '}
+      <a href="https://support.google.com/analytics/answer/6004245" rel="noopener noreferrer" target="_blank">
+        Google Analytics Help
+      </a>
+      . Browser add-on:{' '}
+      <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener noreferrer" target="_blank">
+        Google Analytics Opt-out
+      </a>
+      . If you choose <strong>Reject non-essential</strong>, we do not load Google Analytics from our pages.
+    </p>
+
+    <h3>4.6 Embedded games</h3>
+    <p>
+      After you press <strong>Click to play</strong>, your browser loads the game from a third-party host. That host
+      may set cookies, collect usage data, or show its own ads under its own privacy policy. We do not control those
+      practices.
+    </p>
+
+    <h2 id="cookies">5. Cookie &amp; storage inventory</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[40rem] border-collapse text-left text-sm">
+        <thead>
+          <tr class="border-b border-arcade-border/60 text-white">
+            <th class="py-2 pr-3 font-semibold">Name / type</th>
+            <th class="py-2 pr-3 font-semibold">Provider</th>
+            <th class="py-2 pr-3 font-semibold">Purpose</th>
+            <th class="py-2 font-semibold">Category</th>
+          </tr>
+        </thead>
+        <tbody class="text-arcade-muted">
+          <tr class="border-b border-arcade-border/40 align-top">
+            <td class="py-2 pr-3"><code>gf-cookie-consent</code></td>
+            <td class="py-2 pr-3">{siteConfig.name}</td>
+            <td class="py-2 pr-3">Remember Accept all / Reject non-essential</td>
+            <td class="py-2">Essential</td>
+          </tr>
+          <tr class="border-b border-arcade-border/40 align-top">
+            <td class="py-2 pr-3"><code>gf-recent-plays</code>, <code>gf-favorites</code>, <code>gf-sidebar-collapsed</code></td>
+            <td class="py-2 pr-3">{siteConfig.name}</td>
+            <td class="py-2 pr-3">Gameplay history, favorites, layout preference</td>
+            <td class="py-2">Essential / functional</td>
+          </tr>
+          <tr class="border-b border-arcade-border/40 align-top">
+            <td class="py-2 pr-3"><code>_ga</code>, <code>_ga_*</code>, related GA cookies</td>
+            <td class="py-2 pr-3">Google Analytics</td>
+            <td class="py-2 pr-3">Distinguish users / sessions for analytics</td>
+            <td class="py-2">Analytics (consent)</td>
+          </tr>
+          <tr class="border-b border-arcade-border/40 align-top">
+            <td class="py-2 pr-3">AdSense / DoubleClick cookies (names vary)</td>
+            <td class="py-2 pr-3">Google AdSense &amp; partners</td>
+            <td class="py-2 pr-3">Ad delivery, measurement, personalization</td>
+            <td class="py-2">Advertising (consent)</td>
+          </tr>
+          <tr class="align-top">
+            <td class="py-2 pr-3">Cookies set by game hosts</td>
+            <td class="py-2 pr-3">Third-party game publishers / networks</td>
+            <td class="py-2 pr-3">Game operation and their own ads/analytics</td>
+            <td class="py-2">Third-party (after play)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3">
+      Exact third-party cookie names can change. The popup + this Policy describe categories and purposes. You can
+      reopen choices anytime via <strong>Cookie settings</strong> in the footer.
+    </p>
+
+    <h2>6. Consent Mode &amp; your choices</h2>
+    <p>
+      On first visit we show a cookie popup. Until you choose <strong>Accept all</strong>, advertising and analytics
+      storage remain denied under Google Consent Mode defaults. You may:
+    </p>
+    <ul>
+      <li><strong>Accept all</strong> — enable Google AdSense and Google Analytics cookies/scripts as configured</li>
+      <li><strong>Reject non-essential</strong> — keep essential storage only; AdSense/GA scripts are not loaded by us</li>
+      <li>Change your mind later using <strong>Cookie settings</strong> in the footer</li>
+      <li>Clear cookies and site data in your browser</li>
+    </ul>
+
+    <h2>7. How we use information</h2>
+    <ul>
+      <li>Operate, secure, and improve the Site</li>
+      <li>Remember your preferences and optional gameplay history on your device</li>
+      <li>Respond to support, privacy, accessibility, and copyright requests</li>
+      <li>Measure aggregated traffic (with consent) and show ads (with consent)</li>
+      <li>Comply with law and enforce our Terms</li>
+    </ul>
+
+    <h2>8. Sharing</h2>
+    <p>
+      We may share information with hosting/CDN providers; Google (AdSense / Analytics) when you consent; professional
+      advisors; and authorities when required by law. We do not sell personal information for money. Advertising
+      technologies may constitute “sharing” or “targeted advertising” under some U.S. state laws—use the opt-outs in
+      Section 4.4 and the cookie popup to limit this.
+    </p>
+
+    <h2>9. Legal bases (EEA/UK)</h2>
+    <ul>
+      <li><strong>Consent</strong> — AdSense, Analytics, and other non-essential cookies</li>
+      <li><strong>Legitimate interests</strong> — running a secure Site, essential storage, abuse prevention</li>
+      <li><strong>Legal obligation</strong> — where the law requires processing</li>
+    </ul>
+
+    <h2>10. Children’s privacy</h2>
+    <p>
+      We do not knowingly collect personal information from children under 13. The Site is not directed to children
+      under 13. If we learn that we have received such information, we will take reasonable deletion steps.
+    </p>
+
+    <h2>11. Retention</h2>
+    <ul>
+      <li>Browser local storage — until you clear it or change consent</li>
+      <li>CDN/host logs — per provider defaults (often days to weeks)</li>
+      <li>Google Analytics / AdSense retention — per Google’s settings and policies when those products are active</li>
+    </ul>
+
+    <h2>12. Security</h2>
+    <p>
+      We use HTTPS, security headers, and sandboxed game embeds appropriate for a static site. No online transmission
+      is completely secure.
+    </p>
+
+    <h2>13. International transfers</h2>
+    <p>
+      Hosts and Google may process data in the United States or other countries. Where required, those providers apply
+      their own transfer safeguards.
+    </p>
+
+    <h2>14. Your rights</h2>
+    <p>
+      Depending on where you live, you may have rights to access, correct, delete, restrict, or object to certain
+      processing, and to withdraw consent. You can withdraw cookie consent anytime via Cookie settings in the footer.
+      EEA/UK users may also complain to a supervisory authority.
+    </p>
+
+    <h2>15. Changes</h2>
+    <p>
+      We may update this Policy. The “last updated” date will change when we do. Continued use after updates means you
+      acknowledge the revised Policy.
+    </p>
+  </article>
+</BaseLayout>

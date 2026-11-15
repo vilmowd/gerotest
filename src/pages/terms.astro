@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+
+const updated = '2026-03-15';
+---
+
+<BaseLayout
+  title="Terms of Use"
+  description={`Terms of Use for ${siteConfig.name}: acceptable use, intellectual property, disclaimers, and liability limits.`}
+  showSearch={false}
+>
+  <article class="container-arcade prose-arcade legal-doc w-full max-w-4xl py-8 sm:py-10">
+    <h1 class="font-display text-3xl font-bold text-white">Terms of Use</h1>
+    <p class="mt-2 text-sm text-arcade-muted">
+      Effective / last updated: <time datetime={updated}>{updated}</time>
+    </p>
+
+    <p class="mt-4 rounded-lg border border-arcade-border/60 bg-arcade-card/80 p-4 text-sm text-arcade-muted">
+      These Terms of Use (“Terms”) form a binding agreement between you and{' '}
+      <strong class="text-white">{siteConfig.legalName}</strong> governing access to and use of{' '}
+      <a href={siteConfig.url}>{siteConfig.url}</a> (the “Site”). By accessing or using the Site, you agree to
+      these Terms and our <a href="/privacy-policy/">Privacy Policy</a>. If you do not agree, do not use the Site.
+    </p>
+
+    <h2>1. Eligibility &amp; audience</h2>
+    <p>
+      The Site is intended for a <strong>general audience</strong> and is not directed to children under{' '}
+      {siteConfig.minimumRecommendedAge}. If you are under the age of majority where you live, you may use the
+      Site only with involvement of a parent or guardian. You represent that you have the legal capacity to
+      accept these Terms.
+    </p>
+
+    <h2>2. Description of the service</h2>
+    <p>
+      {siteConfig.name} provides discovery tools (search, categories, editorial notes, and related navigation)
+      for free HTML5 / browser games. Playable game files are typically hosted by third parties and loaded in a
+      sandboxed frame after you choose to play. We do not guarantee uninterrupted availability of any title.
+    </p>
+
+    <h2>3. Accounts</h2>
+    <p>
+      The Site does not require registration. Optional features such as “continue playing” or favorites are stored
+      locally in your browser and are not a hosted account service.
+    </p>
+
+    <h2>4. Acceptable use</h2>
+    <p>You agree not to:</p>
+    <ul>
+      <li>Violate any applicable law or third-party right</li>
+      <li>Attempt to disrupt, overload, scrape aggressively, reverse engineer, or bypass security controls on the Site</li>
+      <li>Interfere with advertising systems, generate invalid ad clicks/impressions, or encourage others to click ads</li>
+      <li>Upload or transmit malware, or attempt unauthorized access to systems or data</li>
+      <li>Misrepresent your identity or affiliation in communications with us</li>
+      <li>Use the Site to distribute infringing copies of software, games, or other copyrighted works</li>
+    </ul>
+
+    <h2>5. Intellectual property</h2>
+    <h3>5.1 Our materials</h3>
+    <p>
+      The Site’s branding, layout, original text, and selection/arrangement of materials are owned by{' '}
+      {siteConfig.legalName} or its licensors and are protected by intellectual property laws. You may not copy
+      or exploit them except as needed for personal, non-commercial use of the Site or as allowed by law.
+    </p>
+    <h3>5.2 Third-party games</h3>
+    <p>
+      Games, trademarks, artwork, audio, and code remain the property of their respective owners. Listing or
+      embedding a game does <strong>not</strong> transfer any ownership to you or to us. If you believe content
+      on the Site infringes your rights, see our <a href="/dmca/">DMCA / Copyright Policy</a>.
+    </p>
+
+    <h2>6. Third-party services &amp; embeds</h2>
+    <p>
+      The Site may link to or embed third-party websites, games, and advertisements. We do not control and are
+      not responsible for third-party content, availability, privacy practices, or terms. Your use of third-party
+      services is at your own risk and subject to those parties’ terms.
+    </p>
+
+    <h2>7. Advertising</h2>
+    <p>
+      The Site may display advertisements, including via Google AdSense. Ads are labeled where served by us and
+      placed away from primary play controls to reduce accidental clicks. Third-party game hosts may show their
+      own ads inside embeds. Advertising partners’ collection and use of data are described in our Privacy Policy.
+    </p>
+
+    <h2>8. Content standards</h2>
+    <p>
+      We aim to keep a family-oriented, general-audience catalog and may remove or refuse listings that appear to
+      violate law, our <a href="/content-policy/">Content Policy</a>, or third-party rights. Removal decisions are
+      discretionary and do not create an obligation to monitor all third-party content continuously.
+    </p>
+
+    <h2>9. Disclaimers</h2>
+    <p>
+      THE SITE AND ALL CONTENT, GAMES, AND SERVICES ARE PROVIDED <strong>“AS IS”</strong> AND <strong>“AS AVAILABLE”</strong>
+      WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING IMPLIED WARRANTIES OF
+      MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE
+      SITE OR ANY GAME WILL BE UNINTERRUPTED, SECURE, ERROR-FREE, OR FREE OF HARMFUL COMPONENTS.
+    </p>
+
+    <h2>10. Limitation of liability</h2>
+    <p>
+      TO THE MAXIMUM EXTENT PERMITTED BY LAW, {siteConfig.legalName.toUpperCase()} AND ITS OPERATORS, AFFILIATES,
+      AND SUPPLIERS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE
+      DAMAGES, OR ANY LOSS OF PROFITS, DATA, GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR RELATED TO YOUR
+      USE OF (OR INABILITY TO USE) THE SITE OR ANY THIRD-PARTY GAME OR SERVICE. OUR TOTAL LIABILITY FOR ANY CLAIM
+      ARISING OUT OF THESE TERMS OR THE SITE SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS (US $100) OR THE MINIMUM
+      AMOUNT PERMITTED BY LAW, WHICHEVER IS GREATER IN YOUR JURISDICTION WHERE SUCH CAP IS RESTRICTED.
+    </p>
+    <p>
+      Some jurisdictions do not allow certain limitations; in those cases, our liability is limited to the fullest
+      extent permitted by law.
+    </p>
+
+    <h2>11. Indemnity</h2>
+    <p>
+      You agree to defend, indemnify, and hold harmless {siteConfig.legalName} and its operators from and against
+      claims, damages, losses, and expenses (including reasonable attorneys’ fees) arising out of your misuse of
+      the Site, your violation of these Terms, or your violation of any third-party right.
+    </p>
+
+    <h2>12. Copyright complaints</h2>
+    <p>
+      We respond to notices of alleged copyright infringement in accordance with applicable law. See{' '}
+      <a href="/dmca/">DMCA / Copyright</a>.
+    </p>
+
+    <h2>13. Termination</h2>
+    <p>
+      We may suspend or terminate access to the Site at any time, including for conduct we believe violates these
+      Terms or creates risk for users, us, or third parties.
+    </p>
+
+    <h2>14. Changes</h2>
+    <p>
+      We may modify these Terms by posting an updated version on the Site with a new effective date. Continued use
+      after changes constitutes acceptance of the revised Terms.
+    </p>
+
+    <h2>15. Governing law</h2>
+    <p>
+      These Terms are governed by {siteConfig.governingLaw}, without regard to conflict-of-law principles, except
+      where mandatory consumer protections in your country of residence provide otherwise.
+    </p>
+
+    <h2>16. Severability &amp; entire agreement</h2>
+    <p>
+      If any provision is held unenforceable, the remaining provisions remain in effect. These Terms, together with
+      the Privacy Policy, Content Policy, and DMCA Policy, constitute the entire agreement between you and us regarding
+      the Site.
+    </p>
+
+  </article>
+</BaseLayout>

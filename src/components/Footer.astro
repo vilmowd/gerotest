@@ -1,0 +1,56 @@
+---
+import { siteConfig } from '../data/site';
+import { AUDIENCE_NOTICE } from '../lib/content-safety';
+
+const year = new Date().getFullYear();
+const links = [
+  { href: '/about/', label: 'About' },
+  { href: '/privacy-policy/', label: 'Privacy Policy' },
+  { href: '/terms/', label: 'Terms of Use' },
+  { href: '/content-policy/', label: 'Content Policy' },
+  { href: '/dmca/', label: 'DMCA / Copyright' },
+  { href: '/accessibility/', label: 'Accessibility' },
+];
+---
+
+<footer class="mt-16 border-t border-arcade-border/50 bg-arcade-panel/40">
+  <div class="container-arcade grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-3">
+    <div>
+      <p class="font-display text-lg font-bold text-white">{siteConfig.name}</p>
+      <p class="mt-2 max-w-sm text-sm text-arcade-muted">{siteConfig.tagline}</p>
+      <p class="mt-3 max-w-sm text-xs text-arcade-muted">{AUDIENCE_NOTICE}</p>
+    </div>
+    <nav aria-label="Legal and information" class="flex flex-col gap-2 text-sm">
+      <p class="font-semibold text-white">Legal &amp; Info</p>
+      {
+        links.map((l) => (
+          <a href={l.href} class="text-arcade-muted hover:text-arcade-accent">
+            {l.label}
+          </a>
+        ))
+      }
+      <button
+        type="button"
+        id="cookie-settings"
+        class="mt-1 text-left text-arcade-muted underline-offset-2 hover:text-arcade-accent hover:underline"
+      >
+        Cookie settings
+      </button>
+    </nav>
+    <div class="text-sm text-arcade-muted">
+      <p class="font-semibold text-white">Play responsibly</p>
+      <p class="mt-2">
+        Free browser games for entertainment. Third-party hosts may show their own ads inside the game frame.
+        When site ads are enabled they are labeled and kept outside the play area. We never ask you to click ads.
+      </p>
+      <p class="mt-3 text-xs">
+        Games remain © their respective owners. See{' '}
+        <a class="text-arcade-accent hover:underline" href="/dmca/">DMCA</a>.
+      </p>
+    </div>
+  </div>
+  <div class="border-t border-arcade-border/60 py-4 text-center text-xs text-arcade-muted">
+    © {year} {siteConfig.legalName}. All rights reserved. Not affiliated with Google unless stated; AdSense is a
+    trademark of Google LLC when used.
+  </div>
+</footer>

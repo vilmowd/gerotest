@@ -1,0 +1,427 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GameCard from '../../components/GameCard.astro';
+import GameBanner from '../../components/GameBanner.astro';
+import {
+  allGames,
+  getPopularGames,
+  getSimilarGames,
+  type Game,
+} from '../../lib/games';
+import { siteConfig } from '../../data/site';
+import { isSafeEmbedUrl, isSafeImageUrl } from '../../lib/security';
+import AdUnit from '../../components/AdUnit.astro';
+import { AUDIENCE_NOTICE } from '../../lib/content-safety';
+
+export function getStaticPaths() {
+  return allGames.map((game) => ({
+    params: { slug: game.slug },
+    props: { game },
+  }));
+}
+
+interface Props {
+  game: Game;
+}
+
+const { game } = Astro.props;
+const similar = getSimilarGames(game, 8);
+const popularSidebar = getPopularGames(6, Number.parseInt(game.id, 10) || 0).filter(
+  (g) => g.slug !== game.slug,
+);
+const moreFun = getPopularGames(7, (Number.parseInt(game.id, 10) || 0) + 11).filter(
+  (g) => g.slug !== game.slug && !similar.some((s) => s.slug === g.slug),
+);
+
+const embedOk = isSafeEmbedUrl(game.url);
+const thumbOk = isSafeImageUrl(game.thumb) ? game.thumb : '/og-default.jpg';
+let embedHost = '';
+try {
+  if (embedOk) embedHost = new URL(game.url).hostname;
+} catch {
+  embedHost = '';
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoGame',
+  name: game.title,
+  description: game.description,
+  image: thumbOk,
+  genre: game.category,
+  keywords: game.tags.join(', '),
+  url: new URL(`/game/${game.slug}/`, Astro.site).href,
+  playMode: 'SinglePlayer',
+  gamePlatform: 'Web Browser',
+  applicationCategory: 'Game',
+  operatingSystem: 'Any',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: siteConfig.name,
+    url: siteConfig.url,
+  },
+};
+---
+
+<BaseLayout
+  title={`Play ${game.title} Free`}
+  description={game.description}
+  image={thumbOk}
+  ogType="website"
+  jsonLd={jsonLd}
+  showSearch={false}
+  showCategories={false}
+  canonical={`/game/${game.slug}/`}
+  prefetchHosts={embedHost ? [embedHost] : []}
+>
+  <div
+    class="theater-bar fixed inset-x-0 top-0 z-[60] hidden items-center justify-between border-b border-arcade-border bg-arcade-bg/95 px-4 py-2 backdrop-blur"
+  >
+    <span class="truncate text-sm font-semibold text-white">{game.title}</span>
+    <button type="button" class="btn btn-accent text-xs" id="exit-theater" data-theater-toggle>
+      Exit Theater
+    </button>
+  </div>
+
+  <div class="container-arcade game-stage py-4 sm:py-6">
+    <nav class="mb-3 text-xs text-arcade-muted sm:mb-4 sm:text-sm" aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2">
+        <li><a href="/" class="hover:text-arcade-accent">Home</a></li>
+        <li aria-hidden="true">/</li>
+        <li><span class="text-arcade-accent">{game.category}</span></li>
+        <li aria-hidden="true">/</li>
+        <li class="truncate text-white">{game.title}</li>
+      </ol>
+    </nav>
+
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div class="min-w-0">
+        <div
+          id="played-meta"
+          class="hidden"
+          data-slug={game.slug}
+          data-title={game.title}
+          data-thumb={game.thumb}
+          data-category={game.category}
+          aria-hidden="true"
+        ></div>
+        <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <h1 class="font-display text-xl font-bold text-white sm:text-2xl md:text-3xl">{game.title}</h1>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              class="btn min-h-11 flex-1 sm:flex-none"
+              id="favorite-toggle"
+              aria-pressed="false"
+              data-slug={game.slug}
+              data-title={game.title}
+              data-thumb={game.thumb}
+              data-category={game.category}
+            >
+              ♡ Save
+            </button>
+            <button type="button" class="btn min-h-11 flex-1 sm:flex-none" id="fullscreen-btn" aria-label="Toggle fullscreen">
+              Fullscreen
+            </button>
+            <button type="button" class="btn min-h-11 flex-1 sm:flex-none" id="theater-btn" data-theater-toggle>
+              Theater
+            </button>
+            {
+              embedOk && (
+                <a
+                  class="btn btn-accent min-h-11 w-full sm:w-auto"
+                  href={game.url}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  referrerpolicy="no-referrer"
+                >
+                  Open original site
+                </a>
+              )
+            }
+          </div>
+        </div>
+        {
+          game.source === 'ported2browser' && (
+            <p class="mb-3 text-xs text-arcade-muted">
+              Browser port listing inspired by{' '}
+              <a
+                class="text-arcade-accent hover:underline"
+                href="https://ported2browser.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ported2Browser
+              </a>
+              . Runs on a third-party project site — some titles need your own game files or may block iframe embedding.
+            </p>
+          )
+        }
+
+        <div
+          id="game-frame-wrap"
+          class="game-frame-wrap relative overflow-hidden rounded-xl border border-arcade-border bg-black"
+          style={`aspect-ratio: ${game.width} / ${game.height}; max-height: min(75vh, 85dvh); min-height: 220px;`}
+          data-game-loader
+          data-embed-ok={embedOk ? '1' : '0'}
+        >
+          <div class="widget-loader hidden opacity-0" data-game-loader-ui aria-hidden="true">
+            <div class="widget-loader-ring"></div>
+          </div>
+          {
+            embedOk ? (
+              <>
+                <button
+                  type="button"
+                  id="click-to-play"
+                  class="absolute inset-0 z-[6] flex flex-col items-center justify-center gap-3 bg-arcade-bg/80 p-4 text-center backdrop-blur-sm"
+                >
+                  <img
+                    src={thumbOk}
+                    alt=""
+                    class="mb-1 max-h-28 w-auto rounded-lg border border-arcade-border/60 opacity-90"
+                    width="200"
+                    height="150"
+                    loading="eager"
+                    decoding="async"
+                  />
+                  <span class="font-display text-xl font-bold text-white sm:text-2xl">Click to play</span>
+                  <span class="max-w-sm text-sm text-arcade-muted">
+                    Loads the game in a sandboxed frame when you’re ready
+                  </span>
+                  <span class="btn btn-accent mt-1">Play {game.title}</span>
+                </button>
+                <iframe
+                  id="game-iframe"
+                  title={`Play ${game.title}`}
+                  loading="lazy"
+                  allow="autoplay; fullscreen; gamepad; focus-without-user-activation"
+                  allowfullscreen
+                  referrerpolicy="no-referrer"
+                  sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-fullscreen allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"
+                  class="absolute inset-0 z-[5] hidden h-full w-full border-0"
+                  data-game-iframe
+                  data-src={game.url}
+                ></iframe>
+              </>
+            ) : (
+              <div class="absolute inset-0 z-[6] flex flex-col items-center justify-center gap-3 p-6 text-center">
+                <p class="font-semibold text-white">This game link isn’t available safely.</p>
+                <p class="text-sm text-arcade-muted">Only HTTPS embeds are allowed on Geroforge.</p>
+              </div>
+            )
+          }
+        </div>
+
+        {
+          moreFun[0] && (
+            <div class="mt-6">
+              <GameBanner game={moreFun[0]} size="lg" />
+            </div>
+          )
+        }
+      </div>
+
+      <aside class="space-y-4 lg:pt-12">
+        <div class="ui-panel p-4">
+          <p class="text-xs font-semibold uppercase tracking-wider text-arcade-muted">Category</p>
+          <p class="mt-1 font-semibold text-arcade-accent">{game.category}</p>
+          {
+            game.tags.length > 0 && (
+              <div class="mt-3 flex flex-wrap gap-2">
+                {game.tags.map((tag) => (
+                  <span class="rounded-md border border-arcade-border/60 bg-arcade-panel px-2 py-0.5 text-xs text-arcade-muted">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )
+          }
+        </div>
+
+        <AdUnit adSlot={siteConfig.adsenseSlots.gameSidebar} format="rectangle" />
+
+        {
+          popularSidebar.length > 0 && (
+            <div>
+              <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-arcade-muted">
+                Popular games
+              </p>
+              <div class="space-y-3">
+                {popularSidebar.slice(0, 5).map((g) => (
+                  <a
+                    href={`/game/${g.slug}/`}
+                    class="group flex gap-3 rounded-xl border border-arcade-border bg-arcade-card p-2 transition hover:border-white/80"
+                  >
+                    <img
+                      src={g.thumb || '/og-default.jpg'}
+                      alt=""
+                      class="h-16 w-20 shrink-0 rounded-lg object-cover"
+                      loading="lazy"
+                      width="80"
+                      height="64"
+                    />
+                    <div class="min-w-0">
+                      <p class="line-clamp-2 text-sm font-semibold text-white group-hover:text-arcade-accent">
+                        {g.title}
+                      </p>
+                      <p class="mt-1 text-[11px] text-arcade-muted">{g.category}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )
+        }
+      </aside>
+    </div>
+
+    <p class="mt-8 rounded-xl border border-arcade-border/60 bg-arcade-card/70 p-4 text-xs text-arcade-muted sm:text-sm">
+      {AUDIENCE_NOTICE} This playable content is hosted by a third party. {siteConfig.name} provides discovery and
+      this page only. Copyright issues: <a class="text-arcade-accent hover:underline" href="/dmca/">DMCA</a>.
+    </p>
+
+    <article class="prose-arcade mt-10 max-w-3xl">
+      <h2>About {game.title}</h2>
+      <p>{game.description}</p>
+
+      <h2>How to play / Controls</h2>
+      <p>{game.instructions}</p>
+
+      <h2>Playing {game.title} on {siteConfig.name}</h2>
+      <p>
+        {game.title} is listed in our {game.category} collection so you can open it instantly in a
+        sandboxed browser frame—no install required. Use <strong>Click to play</strong> when you are
+        ready; that keeps the page light until you choose to load the third-party game files. If the
+        embed does not start, try the original-site link or pick a similar title below.
+      </p>
+      <p>
+        Tips: play in fullscreen for fewer distractions, check whether the game prefers keyboard or
+        touch, and keep an eye on any in-game menus from the original publisher. {siteConfig.name}
+        provides discovery, categories, and this guide; gameplay itself is streamed from the game’s
+        host.
+      </p>
+
+      <h2>Tags</h2>
+      <p>
+        {
+          game.tags.map((tag, i) => (
+            <>
+              {i > 0 && ', '}
+              <span class="text-arcade-accent">#{tag}</span>
+            </>
+          ))
+        }
+      </p>
+    </article>
+
+    {
+      similar.length > 0 && (
+        <section class="mt-12" aria-labelledby="similar-heading">
+          <h2 id="similar-heading" class="mb-4 font-display text-xl font-bold text-white">
+            Similar {game.category} games
+          </h2>
+          <div class="games-row-grid !grid-cols-2 md:!grid-cols-4 lg:!grid-cols-4 xl:!grid-cols-4">
+            {similar.map((g) => (
+              <GameCard game={g} filterable={false} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      moreFun.length > 1 && (
+        <section class="mt-12" aria-labelledby="more-fun-heading">
+          <h2 id="more-fun-heading" class="mb-4 font-display text-xl font-bold text-white">
+            More fun to play
+          </h2>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {moreFun.slice(1, 7).map((g) => (
+              <GameBanner game={g} size="md" />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<script>
+  function isSafeHttps(raw: string | null | undefined) {
+    if (!raw) return false;
+    try {
+      const u = new URL(raw);
+      return u.protocol === 'https:' && !u.username && !u.password;
+    } catch {
+      return false;
+    }
+  }
+
+  function initPlayer() {
+    const wrap = document.getElementById('game-frame-wrap');
+    if (!wrap || wrap.dataset.playerBound === '1') return;
+    wrap.dataset.playerBound = '1';
+
+    const iframe = document.querySelector<HTMLIFrameElement>('[data-game-iframe]');
+    const loaderUi = document.querySelector<HTMLElement>('[data-game-loader-ui]');
+    const playBtn = document.getElementById('click-to-play');
+    const fsBtn = document.getElementById('fullscreen-btn');
+    const theaterToggles = document.querySelectorAll('[data-theater-toggle]');
+
+    const finishLoad = () => {
+      wrap.classList.remove('is-loading');
+      iframe?.classList.remove('hidden');
+      loaderUi?.classList.add('opacity-0');
+      window.setTimeout(() => loaderUi?.classList.add('hidden'), 400);
+    };
+
+    const startGame = () => {
+      if (!iframe) return;
+      const src = iframe.dataset.src || '';
+      if (!isSafeHttps(src)) return;
+      playBtn?.classList.add('hidden');
+      loaderUi?.classList.remove('hidden', 'opacity-0');
+      wrap.classList.add('is-loading', 'media-skel');
+      iframe.addEventListener('load', finishLoad, { once: true });
+      window.setTimeout(finishLoad, 4000);
+      iframe.src = src;
+    };
+
+    playBtn?.addEventListener('click', startGame);
+
+    fsBtn?.addEventListener('click', async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await wrap.requestFullscreen();
+          iframe?.focus();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch {
+        // Fullscreen may be blocked by browser policy
+      }
+    });
+
+    theaterToggles.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.body.classList.toggle('theater-mode');
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('theater-mode')) {
+        document.body.classList.remove('theater-mode');
+      }
+    });
+  }
+
+  initPlayer();
+  document.addEventListener('astro:page-load', initPlayer);
+</script>

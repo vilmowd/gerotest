@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b0f1a"/>
+      <stop offset="100%" stop-color="#161e2e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="980" cy="120" r="220" fill="#22d3ee" opacity="0.12"/>
+  <circle cx="180" cy="520" r="260" fill="#a78bfa" opacity="0.12"/>
+  <!-- Mini logo mark -->
+  <g transform="translate(80,170) scale(2.2)">
+    <rect width="64" height="64" rx="14" fill="#121826" stroke="url(#accent)" stroke-width="2"/>
+    <path fill="url(#accent)" d="M18 42h28v4c0 2-2 4-5 4H23c-3 0-5-2-5-4v-4z"/>
+    <path fill="#67e8f9" d="M14 36h36l-3 6H17l-3-6z"/>
+    <path fill="#0b0f1a" d="M28 16c7.2 0 12 4.2 12 10.2 0 4.6-2.8 7.8-7.4 9.1l4.8 6.7h-5.6l-4.2-6H28v6h-4.8V16H28zm0 4.6v6.8h2.2c2.8 0 4.4-1.4 4.4-3.4S33 20.6 30.2 20.6H28z"/>
+  </g>
+  <text x="260" y="280" font-family="Arial, sans-serif" font-size="72" font-weight="700" fill="url(#accent)">Geroforge</text>
+  <text x="260" y="360" font-family="Arial, sans-serif" font-size="36" fill="#8b9bb4">Free HTML5 Browser Games</text>
+</svg>

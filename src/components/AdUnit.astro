@@ -1,0 +1,46 @@
+---
+import { getAdSenseClient, isAdSenseConfigured } from '../lib/adsense';
+
+interface Props {
+  /** AdSense ad unit ID from Ads → Ad units */
+  adSlot?: string;
+  format?: 'auto' | 'rectangle' | 'horizontal' | 'vertical';
+  class?: string;
+}
+
+/**
+ * Labeled ad unit. Markup is printed only when a real publisher ID + slot exist.
+ * Ads load only after the visitor chooses “Accept all” in the cookie popup.
+ */
+const {
+  adSlot = '',
+  format = 'auto',
+  class: className = '',
+} = Astro.props;
+
+const enabled =
+  isAdSenseConfigured() && Boolean(adSlot) && !/X{4,}|YOUR_|REPLACE/i.test(adSlot);
+const client = getAdSenseClient();
+---
+
+{
+  enabled ? (
+    <aside
+      class:list={['ad-unit', 'ad-unit-gated', className]}
+      aria-label="Advertisement"
+      data-nosnippet
+      hidden
+      data-ad-unit
+    >
+      <p class="ad-unit-label">Advertisement</p>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={client}
+        data-ad-slot={adSlot}
+        data-ad-format={format}
+        data-full-width-responsive="true"
+      />
+    </aside>
+  ) : null
+}

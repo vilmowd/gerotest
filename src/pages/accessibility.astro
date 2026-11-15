@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+
+const updated = '2026-03-15';
+---
+
+<BaseLayout
+  title="Accessibility Statement"
+  description={`Accessibility commitment and WCAG-oriented features for ${siteConfig.name}.`}
+  showSearch={false}
+>
+  <article class="container-arcade prose-arcade legal-doc w-full max-w-4xl py-8 sm:py-10">
+    <h1 class="font-display text-3xl font-bold text-white">Accessibility Statement</h1>
+    <p class="mt-2 text-sm text-arcade-muted">
+      Last updated: <time datetime={updated}>{updated}</time>
+    </p>
+
+    <p class="mt-4">
+      {siteConfig.legalName} is committed to making {siteConfig.name} usable by as many people as possible,
+      including people who use keyboards, screen readers, zoom, and reduced-motion settings. We aim to conform to
+      the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA where practical for a static game-discovery site.
+    </p>
+
+    <h2>Measures we take</h2>
+    <ul>
+      <li>Skip link to main content</li>
+      <li>Semantic headings and labeled form controls on legal pages</li>
+      <li>Visible focus styles for interactive controls</li>
+      <li>ARIA labels on primary navigation, category filters, and dialogs</li>
+      <li>Keyboard support for opening/closing the category menu (Escape closes the mobile drawer)</li>
+      <li>Live region announcements when search/category filters change results</li>
+      <li>Respect for <code>prefers-reduced-motion</code></li>
+      <li>Text alternatives for meaningful images; decorative images marked appropriately</li>
+      <li>Language of page set to English (<code>lang="en"</code>)</li>
+    </ul>
+
+    <h2>Known limitations</h2>
+    <ul>
+      <li>
+        Third-party game embeds are outside our control. Once a game loads in its sandboxed frame, accessibility
+        depends on the game publisher.
+      </li>
+      <li>
+        Some game thumbnails are provided by third parties and may have limited descriptive text beyond the game title.
+      </li>
+      <li>
+        Advertising frames (when enabled) are provided by Google or other networks and may have their own accessibility characteristics.
+      </li>
+    </ul>
+
+    <h2>Compatibility</h2>
+    <p>
+      The Site is designed to work with current evergreen browsers (Chrome, Firefox, Safari, Edge) and common
+      assistive technologies. Older browsers may receive a degraded experience.
+    </p>
+
+    <h2>Ongoing improvements</h2>
+    <p>
+      We continue to prioritize fixes that improve core browsing and reading experiences on our first-party pages,
+      including keyboard use, focus visibility, and assistive-technology compatibility.
+    </p>
+  </article>
+</BaseLayout>

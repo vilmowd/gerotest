@@ -1,0 +1,178 @@
+---
+import '../styles/global.css';
+import { siteConfig } from '../data/site';
+import { buildContentSecurityPolicy, isSafeImageUrl } from '../lib/security';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import CategorySidebar from '../components/CategorySidebar.astro';
+import AdSenseHead from '../components/AdSenseHead.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+  ogType?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  showSearch?: boolean;
+  showCategories?: boolean;
+  /** Optional DNS-prefetch hosts (e.g. game CDN on play pages) */
+  prefetchHosts?: string[];
+}
+
+const {
+  title,
+  description = siteConfig.description,
+  image,
+  canonical,
+  ogType = 'website',
+  jsonLd,
+  showSearch = true,
+  showCategories = showSearch,
+  prefetchHosts = [],
+} = Astro.props;
+
+const pageTitle = title ? `${title} | ${siteConfig.name}` : `${siteConfig.name} — ${siteConfig.tagline}`;
+const canonicalUrl = canonical
+  ? new URL(canonical, Astro.site).href
+  : new URL(Astro.url.pathname, Astro.site).href;
+const safeImage = image && isSafeImageUrl(image) ? image : '/og-default.jpg';
+const ogImage = safeImage.startsWith('http')
+  ? safeImage
+  : new URL(safeImage, Astro.site).href;
+const csp = buildContentSecurityPolicy();
+const uniquePrefetch = [...new Set(prefetchHosts.filter(Boolean))].slice(0, 4);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!-- Meta CSP backup for hosts without HTTP header support (e.g. plain GitHub Pages) -->
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b0f1a" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="rating" content="general" />
+    <meta name="audience" content="all" />
+    <link rel="canonical" href={canonicalUrl} />
+    <AdSenseHead />
+    <link rel="icon" type="image/png" href="/logo-icon.png" />
+    <link rel="shortcut icon" type="image/png" href="/logo-icon.png" />
+    <link rel="apple-touch-icon" href="/logo-icon.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={siteConfig.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {uniquePrefetch.map((host) => <link rel="dns-prefetch" href={`//${host}`} />)}
+
+    {
+      jsonLd && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(Array.isArray(jsonLd) ? jsonLd : jsonLd)}
+        />
+      )
+    }
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="skip-link"
+    >
+      Skip to content
+    </a>
+    <a href="/accessibility/" class="skip-link skip-link-secondary">Accessibility statement</a>
+    <div class="site-chrome">
+      <Navbar showSearch={showSearch} />
+    </div>
+
+    <div class:list={['site-shell', showCategories && 'has-category-sidebar']}>
+      <div class="site-chrome">
+        <CategorySidebar show={showCategories} />
+      </div>
+      <div class="site-main min-w-0 flex-1">
+        <main id="main">
+          <slot />
+        </main>
+        <div class="site-chrome">
+          <Footer />
+        </div>
+      </div>
+    </div>
+
+    <CookieConsent />
+
+    <script>
+      import { initCategoryUI } from '../scripts/portal';
+
+      function bootPortal() {
+        document.body.dataset.gfUiBound = '';
+        initCategoryUI();
+      }
+
+      bootPortal();
+      document.addEventListener('astro:page-load', bootPortal);
+
+      function initMotion() {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        document.querySelectorAll<HTMLImageElement>('img[data-skel-img]').forEach((img) => {
+          const skel = img.closest('.media-skel');
+          if (!skel) return;
+          const done = () => skel.classList.remove('is-loading');
+          if (img.complete && img.naturalWidth > 0) done();
+          else {
+            img.addEventListener('load', done, { once: true });
+            img.addEventListener('error', done, { once: true });
+          }
+        });
+
+        if (reduce) {
+          document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
+          return;
+        }
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              const el = entry.target as HTMLElement;
+              const delay = Number(el.dataset.revealDelay || 0);
+              window.setTimeout(() => el.classList.add('is-visible'), delay);
+              io.unobserve(el);
+            });
+          },
+          { rootMargin: '120px 0px 80px 0px', threshold: 0.01 },
+        );
+
+        document.querySelectorAll<HTMLElement>('.reveal').forEach((el, i) => {
+          if (!el.dataset.revealDelay) {
+            el.dataset.revealDelay = String(Math.min(i % 8, 7) * 18);
+          }
+          io.observe(el);
+        });
+      }
+
+      initMotion();
+      document.addEventListener('astro:page-load', initMotion);
+    </script>
+  </body>
+</html>

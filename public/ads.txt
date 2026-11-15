@@ -1,0 +1,3 @@
+# Replace pub-XXXXXXXXXXXXXXXX with your real AdSense publisher ID
+# (AdSense → Sites → ads.txt — copy the exact line Google shows)
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

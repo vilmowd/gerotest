@@ -1,0 +1,52 @@
+---
+import type { Game } from '../lib/games';
+import { isSafeImageUrl } from '../lib/security';
+
+interface Props {
+  game: Game;
+  size?: 'lg' | 'md';
+}
+
+const { game, size = 'md' } = Astro.props;
+const isLg = size === 'lg';
+const thumb = isSafeImageUrl(game.thumb) ? game.thumb : '/og-default.jpg';
+---
+
+<a
+  href={`/game/${game.slug}/`}
+  class:list={[
+    'game-banner group relative block overflow-hidden rounded-2xl border border-arcade-border bg-arcade-card transition duration-300 hover:-translate-y-0.5 hover:border-white/80 hover:shadow-glow reveal',
+    isLg ? 'min-h-[180px] sm:min-h-[220px]' : 'min-h-[140px] sm:min-h-[160px]',
+  ]}
+>
+  <div class="media-skel is-loading absolute inset-0">
+    <img
+      src={thumb}
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover opacity-50 transition duration-500 group-hover:scale-105 group-hover:opacity-60"
+      loading="lazy"
+      decoding="async"
+      aria-hidden="true"
+      data-skel-img
+      referrerpolicy="no-referrer"
+    />
+  </div>
+  <div class="absolute inset-0 z-[1] bg-gradient-to-r from-arcade-bg via-arcade-bg/75 to-transparent"></div>
+  <div class="relative z-10 flex h-full flex-col justify-end gap-2 p-4 sm:p-5">
+    <span class="w-fit rounded-md bg-arcade-bg/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-arcade-accent backdrop-blur">
+      {game.category}
+    </span>
+    <h3
+      class:list={[
+        'font-display font-bold text-white group-hover:text-arcade-accent',
+        isLg ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl',
+      ]}
+    >
+      {game.title}
+    </h3>
+    <p class="line-clamp-2 max-w-xl text-xs text-arcade-muted sm:text-sm">{game.description}</p>
+    <span class="mt-1 inline-flex w-fit items-center rounded-full bg-arcade-accent px-3 py-1 text-xs font-bold text-arcade-bg transition group-hover:scale-105">
+      Play Now
+    </span>
+  </div>
+</a>

@@ -1,0 +1,41 @@
+---
+import { getAdSenseClient, isAdSenseConfigured } from '../lib/adsense';
+import { getGoogleAnalyticsId, isGoogleAnalyticsConfigured } from '../lib/analytics';
+
+const adsenseOn = isAdSenseConfigured();
+const gaOn = isGoogleAnalyticsConfigured();
+const client = getAdSenseClient();
+const gaId = getGoogleAnalyticsId();
+---
+
+{
+  adsenseOn && <meta name="google-adsense-account" content={client} />
+}
+
+{
+  (adsenseOn || gaOn) && (
+    <script
+      is:inline
+      define:vars={{ gaId, adsenseOn, gaOn }}
+    >
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        window.dataLayer.push(arguments);
+      }
+      window.gtag = window.gtag || gtag;
+      // Google Consent Mode v2 — denied until the user accepts in the cookie popup
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500,
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', true);
+      window.__gfTracking = { gaId: gaId || '', adsenseOn: !!adsenseOn, gaOn: !!gaOn };
+    </script>
+  )
+}

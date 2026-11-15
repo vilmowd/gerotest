@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+
+const updated = '2026-03-15';
+---
+
+<BaseLayout
+  title="DMCA / Copyright Policy"
+  description={`How to submit a copyright takedown or counter-notice for ${siteConfig.name}.`}
+  showSearch={false}
+>
+  <article class="container-arcade prose-arcade legal-doc w-full max-w-4xl py-8 sm:py-10">
+    <h1 class="font-display text-3xl font-bold text-white">DMCA / Copyright Policy</h1>
+    <p class="mt-2 text-sm text-arcade-muted">
+      Effective / last updated: <time datetime={updated}>{updated}</time>
+    </p>
+
+    <p class="mt-4 rounded-lg border border-arcade-border/60 bg-arcade-card/80 p-4 text-sm text-arcade-muted">
+      {siteConfig.legalName} respects intellectual property rights and expects users and partners to do the same.
+      Games and media accessible through the Site are generally created and hosted by third parties. This Policy
+      explains how to notify us of alleged infringement under the Digital Millennium Copyright Act (17 U.S.C. §512)
+      and similar laws.
+    </p>
+
+    <h2>1. Operator</h2>
+    <p>
+      Copyright notices for listings on this Site are handled by <strong>{siteConfig.legalName}</strong>.
+      Include the page URL(s) and the information listed below so we can locate and review the material.
+    </p>
+
+    <h2>2. Notification of claimed infringement</h2>
+    <p>To be effective, a notice should include substantially the following:</p>
+    <ol>
+      <li>A physical or electronic signature of a person authorized to act on behalf of the owner of an exclusive right that is allegedly infringed</li>
+      <li>Identification of the copyrighted work claimed to have been infringed (or a representative list if multiple works)</li>
+      <li>Identification of the material that is claimed to be infringing and information reasonably sufficient to permit us to locate it (URLs on {siteConfig.name} are preferred)</li>
+      <li>Your address, telephone number, and email address</li>
+      <li>A statement that you have a good-faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law</li>
+      <li>A statement that the information in the notification is accurate, and under penalty of perjury, that you are authorized to act on behalf of the owner of an exclusive right that is allegedly infringed</li>
+    </ol>
+
+    <h2>3. Our response</h2>
+    <p>
+      Upon receipt of a notice that substantially complies with the above, we will act expeditiously to remove or
+      disable access to the material claimed to be infringing from our catalog and navigation where reasonably
+      feasible, and we may notify the upstream provider. We may terminate access for repeat infringers in appropriate
+      circumstances.
+    </p>
+
+    <h2>4. Counter-notification</h2>
+    <p>
+      If you believe material was removed or disabled by mistake or misidentification, you may send a
+      counter-notification including: your physical or electronic signature; identification of the material and
+      where it appeared before removal; a statement under penalty of perjury that you have a good-faith belief the
+      material was removed or disabled as a result of mistake or misidentification; your name, address, and telephone
+      number; and a statement that you consent to the jurisdiction of the federal district court for your address
+      (or any judicial district in which {siteConfig.legalName} may be found if outside the U.S.), and that you will
+      accept service of process from the person who provided the original notification.
+    </p>
+    <p>
+      After a valid counter-notice, we may restore the material unless the original complainant seeks a court order
+      restraining you from engaging in infringing activity, consistent with applicable law.
+    </p>
+
+    <h2>5. Misrepresentations</h2>
+    <p>
+      Under 17 U.S.C. §512(f), any person who knowingly materially misrepresents that material is infringing—or was
+      removed by mistake—may be liable for damages.
+    </p>
+
+    <h2>6. Trademarks</h2>
+    <p>
+      If you believe a listing misuses your trademark, send a good-faith report with details of the mark, the URL(s),
+      and the basis for your complaint. We will review such reports under the same process as copyright notices above.
+    </p>
+  </article>
+</BaseLayout>
