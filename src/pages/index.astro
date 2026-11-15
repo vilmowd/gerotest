@@ -50,15 +50,16 @@ const kidQuickCats = ['Arcade', 'Puzzle', 'Hypercasual', 'Stickman', 'Racing', '
   .filter((name) => allGames.some((g) => g.category === name))
   .slice(0, 5);
 
+const siteOrigin = siteConfig.url.replace(/\/+$/, '');
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: siteConfig.name,
-  url: siteConfig.url,
+  url: siteOrigin,
   description: siteConfig.description,
   potentialAction: {
     '@type': 'SearchAction',
-    target: `${siteConfig.url}/?q={search_term_string}`,
+    target: `${siteOrigin}/?q={search_term_string}`,
     'query-input': 'required name=search_term_string',
   },
 };
