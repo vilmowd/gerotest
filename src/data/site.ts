@@ -19,7 +19,7 @@ export const siteConfig = {
   adsenseClient: 'ca-pub-1566573312352415',
   /** Optional AdSense ad unit slot IDs from your AdSense → Ads → Ad units */
   adsenseSlots: {
-    gameSidebar: '',
+    gameSidebar: '2680739199',
     homeInFeed: '5135337135',
   },
   /**
