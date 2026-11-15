@@ -20,7 +20,7 @@ export const siteConfig = {
   /** Optional AdSense ad unit slot IDs from your AdSense → Ads → Ad units */
   adsenseSlots: {
     gameSidebar: '',
-    homeInFeed: '',
+    homeInFeed: '5135337135',
   },
   /**
    * Google Analytics 4 Measurement ID, e.g. G-XXXXXXXXXX

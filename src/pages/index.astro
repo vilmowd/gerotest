@@ -216,6 +216,10 @@ const jsonLd = {
     )
   }
 
+  <div class="container-arcade mt-10" data-home-browse>
+    <AdUnit adSlot={siteConfig.adsenseSlots.homeInFeed} format="auto" />
+  </div>
+
   {
     popularCards.length > 0 && (
       <section class="container-arcade mt-10" data-home-browse aria-labelledby="popular-heading">
@@ -243,6 +247,10 @@ const jsonLd = {
     )
   }
 
+  <div class="container-arcade mt-10" data-home-browse>
+    <AdUnit adSlot={siteConfig.adsenseSlots.homeInFeed} format="auto" />
+  </div>
+
   {
     featuredBanner && featuredCards.length > 0 && (
       <section class="container-arcade mt-10" data-home-browse aria-labelledby="featured-heading">
@@ -264,8 +272,13 @@ const jsonLd = {
     )
   }
 
+  <div class="container-arcade mt-10" data-home-browse>
+    <AdUnit adSlot={siteConfig.adsenseSlots.homeInFeed} format="auto" />
+  </div>
+
   {
     categoryRows.map((row) => (
+      <>
       <section class="container-arcade mt-10" data-home-browse aria-labelledby={`cat-${row.name}`}>
         <div class="mb-4 flex items-end justify-between gap-3">
           <div>
@@ -285,6 +298,10 @@ const jsonLd = {
           ))}
         </div>
       </section>
+      <div class="container-arcade mt-10" data-home-browse>
+        <AdUnit adSlot={siteConfig.adsenseSlots.homeInFeed} format="auto" />
+      </div>
+      </>
     ))
   }
 
@@ -316,7 +333,7 @@ const jsonLd = {
   }
 
   <div class="container-arcade mt-10" data-home-browse>
-    <AdUnit adSlot={siteConfig.adsenseSlots.homeInFeed} format="horizontal" />
+    <AdUnit adSlot={siteConfig.adsenseSlots.homeInFeed} format="auto" />
   </div>
 
   <section
