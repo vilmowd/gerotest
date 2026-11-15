@@ -15,7 +15,6 @@ const thumb = isSafeImageUrl(game.thumb) ? game.thumb : '/og-default.jpg';
 
 <article
   class="game-card group reveal"
-  role="listitem"
   {...(filterable
     ? {
         'data-game-card': true,
@@ -32,8 +31,8 @@ const thumb = isSafeImageUrl(game.thumb) ? game.thumb : '/og-default.jpg';
         alt={`${game.title} thumbnail`}
         loading="lazy"
         decoding="async"
-        width={game.width || 600}
-        height={game.height || 400}
+        width="512"
+        height="384"
         class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         data-skel-img
         referrerpolicy="no-referrer"

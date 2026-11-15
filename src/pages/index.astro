@@ -78,7 +78,10 @@ const jsonLd = {
               alt=""
               class="absolute inset-0 h-full w-full object-cover brightness-105 saturate-125"
               loading="eager"
+              fetchpriority="high"
               decoding="async"
+              width="512"
+              height="384"
               aria-hidden="true"
               data-skel-img
             />
@@ -106,9 +109,9 @@ const jsonLd = {
                 src={trending.thumb || '/og-default.jpg'}
                 alt={`${trending.title} cover`}
                 class="mx-auto max-h-64 w-auto rounded-xl border border-arcade-border shadow-glow"
-                width={trending.width}
-                height={trending.height}
-                loading="eager"
+                width="512"
+                height="384"
+                loading="lazy"
                 data-skel-img
               />
             </div>
@@ -336,7 +339,6 @@ const jsonLd = {
     <div
       id="games-grid"
       class="games-row-grid"
-      role="list"
       data-catalog-grid
       data-catalog-initial={CATALOG_INITIAL}
       data-catalog-step={CATALOG_STEP}

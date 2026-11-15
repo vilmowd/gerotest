@@ -290,7 +290,9 @@ export function initCategoryUI() {
     sidebar.dataset.open = open ? 'true' : 'false';
     sidebar.classList.toggle('is-open', open);
     toggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
-    sidebar.setAttribute('aria-hidden', open || isDesktop() ? 'false' : 'true');
+    const hideFromTree = !open && !isDesktop();
+    sidebar.setAttribute('aria-hidden', hideFromTree ? 'true' : 'false');
+    sidebar.inert = hideFromTree;
     if (backdrop) {
       backdrop.hidden = !open;
       backdrop.classList.toggle('opacity-0', !open);
@@ -405,6 +407,8 @@ export function initCategoryUI() {
     } else {
       grid.innerHTML = slice.map(catalogCardHtml).join('');
     }
+    if (slice.length) grid.setAttribute('role', 'list');
+    else grid.removeAttribute('role');
     if (catalogPlaceholder) catalogPlaceholder.hidden = true;
     const filtering = activeCategory !== 'All' || Boolean((search?.value || '').trim());
     updateCatalogChrome(filtering);

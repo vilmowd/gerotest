@@ -152,9 +152,17 @@ const gaId = getGoogleAnalyticsId();
     }
   }
 
+  function setBackgroundInert(on) {
+    Array.from(document.body.children).forEach(function (el) {
+      if (el.id === 'gf-choice' || el.id === 'gf-block-note') return;
+      el.inert = on;
+    });
+  }
+
   function closeChoice(banner) {
     banner.hidden = true;
     document.body.classList.remove('gf-choice-open');
+    setBackgroundInert(false);
   }
 
   function showNote() {
@@ -219,6 +227,7 @@ const gaId = getGoogleAnalyticsId();
     if (note) note.hidden = true;
     banner.hidden = false;
     document.body.classList.add('gf-choice-open');
+    setBackgroundInert(true);
     banner.querySelector('[data-gf-accept]')?.focus();
     watchChoice(banner);
   }
