@@ -8,7 +8,7 @@ export default {
           bg: '#0b0f1a',
           panel: '#121826',
           card: '#161e2e',
-          border: '#9fd4b8',
+          border: '#ffffff',
           muted: '#8b9bb4',
           accent: '#22d3ee',
           accent2: '#a78bfa',
@@ -21,7 +21,7 @@ export default {
         body: ['"Exo 2"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        glow: '0 0 24px rgba(159, 212, 184, 0.22)',
+        glow: '0 0 24px rgba(255, 255, 255, 0.18)',
       },
       backgroundImage: {
         'arcade-grid':
