@@ -2,8 +2,6 @@
 @import '@fontsource/exo-2/latin-500.css';
 @import '@fontsource/exo-2/latin-600.css';
 @import '@fontsource/exo-2/latin-700.css';
-@import '@fontsource/orbitron/latin-600.css';
-@import '@fontsource/orbitron/latin-700.css';
 
 @tailwind base;
 @tailwind components;
@@ -209,10 +207,10 @@
     border-radius: calc(0.75rem - 2px);
     background: #121826;
     padding: 0.5rem 0.75rem;
-    font-family: Orbitron, ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Exo 2', ui-sans-serif, system-ui, sans-serif;
     font-size: 0.875rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
     color: #fff;
     transition: background 0.2s ease, color 0.2s ease;
   }

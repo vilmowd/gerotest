@@ -17,7 +17,7 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Orbitron"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Exo 2"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         body: ['"Exo 2"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
