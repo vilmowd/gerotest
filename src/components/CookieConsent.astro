@@ -9,31 +9,40 @@ const gaId = getGoogleAnalyticsId();
 ---
 
 <div
-  id="cookie-consent"
-  class="cookie-consent"
+  id="gf-choice"
+  class="gf-choice"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="cookie-consent-title"
-  aria-describedby="cookie-consent-desc"
+  aria-labelledby="gf-choice-title"
+  aria-describedby="gf-choice-desc"
   hidden
 >
-  <div class="cookie-consent-panel">
-    <p id="cookie-consent-title" class="font-display text-base font-bold text-white sm:text-lg">
+  <div class="gf-choice-card" data-gf-card>
+    <p id="gf-choice-title" class="font-display text-base font-bold text-white sm:text-lg">
       We use cookies
     </p>
-    <p id="cookie-consent-desc" class="mt-2 text-xs leading-relaxed text-arcade-muted sm:text-sm">
+    <p id="gf-choice-desc" class="mt-2 text-xs leading-relaxed text-arcade-muted sm:text-sm">
       We use essential cookies for the site to work. A Google tag is on every page; analytics and ad cookies stay off until you accept.
       Details in our <a class="text-arcade-accent underline" href="/privacy-policy/">Privacy Policy</a>.
     </p>
     <div class="mt-4 flex flex-wrap gap-2">
-      <button type="button" class="btn btn-accent text-xs sm:text-sm" data-cookie-accept>
+      <button type="button" class="btn btn-accent text-xs sm:text-sm" data-gf-accept>
         Accept all
       </button>
-      <button type="button" class="btn text-xs sm:text-sm" data-cookie-essential>
+      <button type="button" class="btn text-xs sm:text-sm" data-gf-essential>
         Essential only
       </button>
     </div>
   </div>
+</div>
+
+<div id="gf-block-note" class="gf-block-note" hidden role="status">
+  <p class="text-sm text-white">
+    An ad blocker is hiding the cookie choice, so the page was left open. Pause the blocker and refresh if you want to allow ads.
+  </p>
+  <button type="button" class="btn mt-3 text-xs sm:text-sm" data-gf-note-close>
+    Continue
+  </button>
 </div>
 
 <script
@@ -139,65 +148,115 @@ const gaId = getGoogleAnalyticsId();
           encodeURIComponent(adsenseClient),
         { crossorigin: 'anonymous' },
       );
-      // Give the script a moment, then fill labeled units
       window.setTimeout(revealAdUnits, 400);
     }
+  }
+
+  function closeChoice(banner) {
+    banner.hidden = true;
+    document.body.classList.remove('gf-choice-open');
+  }
+
+  function showNote() {
+    const note = document.getElementById('gf-block-note');
+    if (note) note.hidden = false;
+  }
+
+  function choiceBlocked(banner, checkSize) {
+    if (banner.hidden) return false;
+    const bannerStyle = getComputedStyle(banner);
+    if (bannerStyle.display === 'none' || bannerStyle.visibility === 'hidden') return true;
+    const card = banner.querySelector('[data-gf-card]');
+    if (!card || !card.isConnected) return true;
+    const style = getComputedStyle(card);
+    if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) {
+      return true;
+    }
+    if (!checkSize) return false;
+    const rect = card.getBoundingClientRect();
+    return rect.width <= 8 || rect.height <= 8;
+  }
+
+  function releaseIfBlocked(banner, checkSize) {
+    if (!choiceBlocked(banner, checkSize)) return;
+    closeChoice(banner);
+    if (!readConsent()) {
+      writeConsent('essential');
+      loadTracking(false);
+    }
+    showNote();
+  }
+
+  function watchChoice(banner) {
+    window.setTimeout(function () {
+      releaseIfBlocked(banner, false);
+    }, 50);
+    window.setTimeout(function () {
+      releaseIfBlocked(banner, true);
+    }, 400);
+    window.setTimeout(function () {
+      releaseIfBlocked(banner, true);
+    }, 1200);
   }
 
   function bindBanner(banner) {
     if (banner.dataset.bound === '1') return;
     banner.dataset.bound = '1';
-    banner.querySelector('[data-cookie-accept]')?.addEventListener('click', function () {
+    banner.querySelector('[data-gf-accept]')?.addEventListener('click', function () {
       writeConsent('accepted');
       loadTracking(true);
-      banner.hidden = true;
-      document.body.classList.remove('cookie-consent-open');
+      closeChoice(banner);
     });
-    banner.querySelector('[data-cookie-essential]')?.addEventListener('click', function () {
+    banner.querySelector('[data-gf-essential]')?.addEventListener('click', function () {
       writeConsent('essential');
       loadTracking(false);
-      banner.hidden = true;
-      document.body.classList.remove('cookie-consent-open');
+      closeChoice(banner);
     });
   }
 
+  function openChoice(banner) {
+    const note = document.getElementById('gf-block-note');
+    if (note) note.hidden = true;
+    banner.hidden = false;
+    document.body.classList.add('gf-choice-open');
+    banner.querySelector('[data-gf-accept]')?.focus();
+    watchChoice(banner);
+  }
+
   function initConsent() {
-    const banner = document.getElementById('cookie-consent');
+    const banner = document.getElementById('gf-choice');
     if (!banner) return;
     bindBanner(banner);
 
     const existing = readConsent();
     if (existing === 'accepted') {
-      banner.hidden = true;
-      document.body.classList.remove('cookie-consent-open');
+      closeChoice(banner);
       loadTracking(true);
       return;
     }
     if (existing === 'essential') {
-      banner.hidden = true;
-      document.body.classList.remove('cookie-consent-open');
+      closeChoice(banner);
       loadTracking(false);
       return;
     }
 
-    // First visit — show popup; keep ads/analytics off until choice
     updateConsentMode(false);
-    banner.hidden = false;
-    document.body.classList.add('cookie-consent-open');
+    openChoice(banner);
   }
 
-  document.getElementById('cookie-settings')?.addEventListener('click', function (e) {
+  document.getElementById('gf-choice-reopen')?.addEventListener('click', function (e) {
     e.preventDefault();
     try {
       localStorage.removeItem(KEY);
       localStorage.removeItem(KEY_TS);
     } catch (err) {}
-    const banner = document.getElementById('cookie-consent');
-    if (banner) {
-      banner.hidden = false;
-      document.body.classList.add('cookie-consent-open');
-      banner.querySelector('[data-cookie-accept]')?.focus();
-    }
+    const banner = document.getElementById('gf-choice');
+    if (banner) openChoice(banner);
+  });
+
+  document.querySelector('[data-gf-note-close]')?.addEventListener('click', function () {
+    const note = document.getElementById('gf-block-note');
+    if (note) note.hidden = true;
   });
 
   initConsent();
