@@ -28,7 +28,7 @@ export const siteConfig = {
    */
   googleAnalyticsId: 'G-XXXXXXXXXX',
   /** Google Tag Manager container, loaded on every page */
-  gtmId: 'GTM-TLGTJ44C',
+  gtmId: 'GTM-PQLV9WP4',
   gamemonetizeId: 'YOUR_GAMEMONETIZE_PUBLISHER_ID',
   /** Audience positioning for policy & COPPA alignment */
   audience: 'general',
