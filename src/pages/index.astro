@@ -12,22 +12,26 @@ import {
 import { siteConfig } from '../data/site';
 import AdUnit from '../components/AdUnit.astro';
 
-/** Keep browse rows light (divisible by 2/4/8) — full catalog is lazy-loaded below */
-const ROW = 8;
+/** Full rows under each banner (divisible by 2/4/6/8) */
+const ROW = 24;
 
 const trending = getTrendingGames(1)[0] ?? allGames[0];
 const heroBanners = getPopularGames(3, 0);
+const heroCards = getPopularGames(ROW, 55);
 const popularBanners = getPopularGames(2, 3);
 const popularCards = getPopularGames(ROW, 5);
-const featured = getTrendingGames(ROW);
-const topCategories = getTopCategories(3);
+const featuredPool = getTrendingGames(ROW + 1);
+const featuredBanner = featuredPool[0] ?? null;
+const featuredCards = featuredPool.slice(1, ROW + 1);
+const topCategories = getTopCategories(6);
 const categoryRows = topCategories
   .map((cat) => ({
     ...cat,
     games: getPopularInCategory(cat.name, ROW + 1),
   }))
-  .filter((row) => row.games.length >= 5);
+  .filter((row) => row.games.length >= ROW + 1);
 const morePopular = getPopularGames(4, 29);
+const morePopularCards = getPopularGames(ROW, 37);
 const games = allGames;
 /** Catalog loads when scrolled into view: 80 first, then +40 via Load more */
 const CATALOG_INITIAL = 80;
@@ -37,6 +41,9 @@ const dayIndex = Math.floor(Date.now() / 86_400_000);
 const dailyPick = allGames.length
   ? allGames[dayIndex % allGames.length]
   : null;
+const dailyCards = getPopularGames(ROW + 1, (dayIndex % 40) + 8)
+  .filter((g) => g.slug !== dailyPick?.slug)
+  .slice(0, ROW);
 
 const kidQuickCats = ['Arcade', 'Puzzle', 'Hypercasual', 'Stickman', 'Racing', 'Sports']
   .filter((name) => allGames.some((g) => g.category === name))
@@ -61,12 +68,15 @@ const jsonLd = {
     {
       trending && (
         <div class="reveal relative overflow-hidden rounded-2xl border border-arcade-border bg-arcade-card" data-reveal-delay="0">
-          <div class="absolute inset-0 z-10 bg-gradient-to-r from-arcade-bg via-arcade-bg/80 to-transparent" />
+          <div
+            class="absolute inset-0 z-10"
+            style="background: linear-gradient(90deg, #0b0f1a 0%, rgba(11,15,26,0.94) 26%, rgba(11,15,26,0.5) 52%, rgba(11,15,26,0.1) 74%, transparent 100%);"
+          />
           <div class="media-skel is-loading absolute inset-0">
             <img
               src={trending.thumb || '/og-default.jpg'}
               alt=""
-              class="absolute inset-0 h-full w-full object-cover opacity-40"
+              class="absolute inset-0 h-full w-full object-cover brightness-105 saturate-125"
               loading="eager"
               decoding="async"
               aria-hidden="true"
@@ -81,7 +91,7 @@ const jsonLd = {
               <h1 class="font-display text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
                 {trending.title}
               </h1>
-              <p class="mt-3 max-w-xl text-sm text-arcade-muted sm:text-base">
+              <p class="mt-3 max-w-xl text-sm text-white/90 sm:text-base">
                 {trending.description}
               </p>
               <div class="mt-6 flex flex-wrap gap-3">
@@ -109,10 +119,21 @@ const jsonLd = {
 
     {
       heroBanners.length > 0 && (
-        <div class="mt-6 grid gap-3 md:grid-cols-3">
-          {heroBanners.map((game) => (
-            <GameBanner game={game} size="md" />
-          ))}
+        <div class="mt-6">
+          <div class="grid gap-3 md:grid-cols-3">
+            {heroBanners.map((game) => (
+              <GameBanner game={game} size="md" />
+            ))}
+          </div>
+          {
+            heroCards.length > 0 && (
+              <div class="games-row-grid mt-3">
+                {heroCards.map((game) => (
+                  <GameCard game={game} filterable={false} compact />
+                ))}
+              </div>
+            )
+          }
         </div>
       )
     }
@@ -178,6 +199,15 @@ const jsonLd = {
           <p class="text-sm text-arcade-muted">A fresh free pick every day — tap and play</p>
         </div>
         <GameBanner game={dailyPick} size="lg" />
+        {
+          dailyCards.length > 0 && (
+            <div class="games-row-grid mt-3">
+              {dailyCards.map((game) => (
+                <GameCard game={game} filterable={false} compact />
+              ))}
+            </div>
+          )
+        }
       </section>
     )
   }
@@ -210,7 +240,7 @@ const jsonLd = {
   }
 
   {
-    featured.length > 0 && (
+    featuredBanner && featuredCards.length > 0 && (
       <section class="container-arcade mt-10" data-home-browse aria-labelledby="featured-heading">
         <div class="mb-4">
           <h2 id="featured-heading" class="font-display text-xl font-bold text-white sm:text-2xl">
@@ -218,8 +248,11 @@ const jsonLd = {
           </h2>
           <p class="text-sm text-arcade-muted">Fresh drops packed with fun</p>
         </div>
+        <div class="mb-3">
+          <GameBanner game={featuredBanner} size="lg" />
+        </div>
         <div class="games-row-grid">
-          {featured.map((game) => (
+          {featuredCards.map((game) => (
             <GameCard game={game} filterable={false} compact />
           ))}
         </div>
@@ -263,49 +296,22 @@ const jsonLd = {
             <GameBanner game={game} size="md" />
           ))}
         </div>
+        {
+          morePopularCards.length > 0 && (
+            <div class="games-row-grid mt-3">
+              {morePopularCards.map((game) => (
+                <GameCard game={game} filterable={false} compact />
+              ))}
+            </div>
+          )
+        }
       </section>
     )
   }
 
-  <section class="container-arcade mt-12" data-home-browse aria-labelledby="faq-heading">
-    <div class="mb-4">
-      <h2 id="faq-heading" class="font-display text-xl font-bold text-white sm:text-2xl">
-        How Geroforge works
-      </h2>
-      <p class="text-sm text-arcade-muted">Quick answers before you dive into the full catalog</p>
-    </div>
-    <div class="grid gap-4 md:grid-cols-2">
-      <div class="ui-panel p-4">
-        <h3 class="font-semibold text-white">Do I need to download anything?</h3>
-        <p class="mt-2 text-sm text-arcade-muted">
-          No. Games open in your browser after you tap Click to play. We keep the page light until you
-          choose a title so phones and slow connections stay usable.
-        </p>
-      </div>
-      <div class="ui-panel p-4">
-        <h3 class="font-semibold text-white">Who makes these games?</h3>
-        <p class="mt-2 text-sm text-arcade-muted">
-          Independent HTML5 publishers. {siteConfig.name} organizes discovery—search, categories, and
-          guides—while each game’s files stay on its original host.
-        </p>
-      </div>
-      <div class="ui-panel p-4">
-        <h3 class="font-semibold text-white">Is this family-friendly?</h3>
-        <p class="mt-2 text-sm text-arcade-muted">
-          Yes—we position the site as family-oriented for a general audience (not directed to kids under 13).
-          We filter high-risk content; parents should still supervise younger players. See our Content Policy.
-        </p>
-      </div>
-      <div class="ui-panel p-4">
-        <h3 class="font-semibold text-white">Ads &amp; privacy</h3>
-        <p class="mt-2 text-sm text-arcade-muted">
-          When ads are enabled they are labeled and kept outside the play frame. See Privacy Policy for
-          cookies, AdSense disclosures, and opt-out links.
-        </p>
-      </div>
-    </div>
-    <AdUnit adSlot={siteConfig.adsenseSlots.homeInFeed} format="horizontal" class="mt-6" />
-  </section>
+  <div class="container-arcade mt-10" data-home-browse>
+    <AdUnit adSlot={siteConfig.adsenseSlots.homeInFeed} format="horizontal" />
+  </div>
 
   <section
     id="catalog-section"

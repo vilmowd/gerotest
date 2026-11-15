@@ -23,7 +23,7 @@ const thumb = isSafeImageUrl(game.thumb) ? game.thumb : '/og-default.jpg';
     <img
       src={thumb}
       alt=""
-      class="absolute inset-0 h-full w-full object-cover opacity-50 transition duration-500 group-hover:scale-105 group-hover:opacity-60"
+      class="absolute inset-0 h-full w-full object-cover brightness-105 contrast-105 saturate-125 transition duration-500 group-hover:scale-105 group-hover:brightness-110"
       loading="lazy"
       decoding="async"
       aria-hidden="true"
@@ -31,20 +31,24 @@ const thumb = isSafeImageUrl(game.thumb) ? game.thumb : '/og-default.jpg';
       referrerpolicy="no-referrer"
     />
   </div>
-  <div class="absolute inset-0 z-[1] bg-gradient-to-r from-arcade-bg via-arcade-bg/75 to-transparent"></div>
+  <!-- Dark on the left for readable copy; clear on the right so art colors show -->
+  <div
+    class="absolute inset-0 z-[1]"
+    style="background: linear-gradient(90deg, #0b0f1a 0%, rgba(11,15,26,0.92) 22%, rgba(11,15,26,0.55) 48%, rgba(11,15,26,0.12) 72%, transparent 100%);"
+  ></div>
   <div class="relative z-10 flex h-full flex-col justify-end gap-2 p-4 sm:p-5">
-    <span class="w-fit rounded-md bg-arcade-bg/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-arcade-accent backdrop-blur">
+    <span class="w-fit rounded-md bg-arcade-bg/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white backdrop-blur">
       {game.category}
     </span>
     <h3
       class:list={[
-        'font-display font-bold text-white group-hover:text-arcade-accent',
+        'font-display font-bold text-white group-hover:text-white',
         isLg ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl',
       ]}
     >
       {game.title}
     </h3>
-    <p class="line-clamp-2 max-w-xl text-xs text-arcade-muted sm:text-sm">{game.description}</p>
+    <p class="line-clamp-2 max-w-xl text-xs text-white/90 sm:text-sm">{game.description}</p>
     <span class="mt-1 inline-flex w-fit items-center rounded-full bg-arcade-accent px-3 py-1 text-xs font-bold text-arcade-bg transition group-hover:scale-105">
       Play Now
     </span>

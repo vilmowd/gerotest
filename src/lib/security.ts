@@ -89,7 +89,7 @@ export function buildContentSecurityPolicy(): string {
     "child-src 'self' https: blob:",
     "frame-src https:",
     "form-action 'self'",
-    "frame-ancestors 'none'",
+    // frame-ancestors is ignored in <meta>; keep it only in HTTP headers (public/_headers)
     "upgrade-insecure-requests",
   ];
   return directives.join('; ');

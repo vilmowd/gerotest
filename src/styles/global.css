@@ -381,12 +381,15 @@
     content: '';
     position: absolute;
     inset: -40% auto -40% -30%;
-    width: 40%;
+    width: 45%;
+    z-index: 2;
     background: linear-gradient(
       100deg,
-      transparent,
-      rgba(255, 255, 255, 0.08),
-      transparent
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 35%,
+      rgba(255, 255, 255, 0.28) 50%,
+      rgba(255, 255, 255, 0.08) 65%,
+      transparent 100%
     );
     transform: skewX(-18deg) translateX(-120%);
     transition: transform 0.01s;
@@ -394,7 +397,7 @@
   }
 
   .game-banner:hover::after {
-    animation: banner-shine 0.9s ease forwards;
+    animation: banner-shine 0.85s ease forwards;
   }
 }
 
