@@ -78,25 +78,50 @@ export function toggleFavorite(game: Omit<PlayedGame, 'at'>): boolean {
   return !exists;
 }
 
-function cardMatches(
-  el: HTMLElement,
-  activeCategory: string,
-  q: string,
-): boolean {
-  const title = (el.dataset.title || '').toLowerCase();
-  const category = el.dataset.category || '';
-  const tags = (el.dataset.tags || '').toLowerCase();
+type CatalogGame = { s: string; t: string; c: string; i: string };
+
+function catalogMatches(game: CatalogGame, activeCategory: string, q: string): boolean {
+  const title = game.t.toLowerCase();
+  const category = game.c || '';
   const catOk = activeCategory === 'All' || category === activeCategory;
   const qOk =
-    !q ||
-    title.includes(q) ||
-    tags.includes(q) ||
-    category.toLowerCase().includes(q);
+    !q || title.includes(q) || category.toLowerCase().includes(q);
   return catOk && qOk;
 }
 
+function safeThumb(url: string): string {
+  const t = (url || '').trim();
+  if (!t) return '/og-default.jpg';
+  if (t.startsWith('/')) return t;
+  if (/^https:\/\//i.test(t)) return t;
+  return '/og-default.jpg';
+}
+
+function catalogCardHtml(game: CatalogGame): string {
+  const slug = safePathSegment(game.s);
+  const title = escapeHtml(game.t || 'Game');
+  const category = escapeHtml(game.c || '');
+  const thumb = escapeHtml(safeThumb(game.i));
+  const titleAttr = escapeHtml(game.t || '');
+  const catAttr = escapeHtml(game.c || '');
+  return `<article class="game-card group reveal is-visible" role="listitem" data-game-card="true" data-title="${titleAttr}" data-category="${catAttr}" data-tags="">
+  <a href="/game/${slug}/" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-arcade-accent">
+    <div class="media-skel relative aspect-[4/3] overflow-hidden bg-arcade-panel">
+      <img src="${thumb}" alt="${title} thumbnail" loading="lazy" decoding="async" width="600" height="400" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" referrerpolicy="no-referrer" />
+      <div class="absolute inset-0 z-[3] flex items-center justify-center bg-arcade-bg/60 opacity-0 transition group-hover:opacity-100" aria-hidden="true">
+        <span class="rounded-full bg-arcade-accent px-4 py-2 font-display text-sm font-bold text-arcade-bg shadow-glow">Play</span>
+      </div>
+      <span class="absolute left-2 top-2 z-[3] rounded-md bg-arcade-bg/80 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-arcade-accent backdrop-blur">${category}</span>
+    </div>
+    <div class="p-3">
+      <h3 class="line-clamp-1 font-semibold text-white group-hover:text-arcade-accent">${title}</h3>
+    </div>
+  </a>
+</article>`;
+}
+
 function trimFullRows(grid: HTMLElement | null) {
-  if (!grid) return;
+  if (!grid || grid.hasAttribute('data-catalog-grid')) return;
   const kids = [...grid.querySelectorAll<HTMLElement>('[data-game-card]')];
   kids.forEach((el) => el.classList.remove('row-trim-hide'));
   const visible = kids.filter((el) => !el.classList.contains('is-filtered-out'));
@@ -171,14 +196,15 @@ function initShelves() {
   }
 }
 
-function initRandomGame() {
+function initRandomGame(getPool: () => CatalogGame[] | Promise<CatalogGame[]>) {
   const btn = document.getElementById('surprise-game');
-  const pool = document.querySelectorAll<HTMLElement>('#games-grid [data-game-card]');
-  if (!btn || !pool.length) return;
+  if (!btn) return;
   btn.addEventListener('click', () => {
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    const link = pick.querySelector('a') as HTMLAnchorElement | null;
-    if (link?.href) window.location.href = link.href;
+    void Promise.resolve(getPool()).then((pool) => {
+      if (!pool.length) return;
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      window.location.href = `/game/${safePathSegment(pick.s)}/`;
+    });
   });
 }
 
@@ -224,12 +250,15 @@ export function initCategoryUI() {
   const collapseBtn = document.getElementById('category-collapse');
   const search = document.getElementById('game-search') as HTMLInputElement | null;
   const pills = document.querySelectorAll<HTMLButtonElement>('#category-filters [data-category]');
-  const cards = document.querySelectorAll<HTMLElement>('#games-grid [data-game-card]');
+  const grid = document.getElementById('games-grid');
   const empty = document.getElementById('games-empty');
   const activeLabel = document.getElementById('active-category-label');
   const resultCount = document.getElementById('filter-result-count');
   const browseSections = document.querySelectorAll<HTMLElement>('[data-home-browse]');
   const catalog = document.getElementById('catalog-section');
+  const loadMoreBtn = document.getElementById('catalog-load-more') as HTMLButtonElement | null;
+  const pageStatus = document.getElementById('catalog-page-status');
+  const catalogPlaceholder = document.getElementById('catalog-placeholder');
 
   // Mark so we do not double-bind listeners after soft navigations
   if (document.body.dataset.gfUiBound === '1') {
@@ -241,6 +270,16 @@ export function initCategoryUI() {
 
   let activeCategory = 'All';
   const mq = window.matchMedia('(min-width: 1024px)');
+
+  const initialSize = Number(grid?.dataset.catalogInitial || 80) || 80;
+  const stepSize = Number(grid?.dataset.catalogStep || 40) || 40;
+  const catalogTotalHint = Number(grid?.dataset.catalogTotal || 0) || 0;
+  let catalogGames: CatalogGame[] = [];
+  let filteredGames: CatalogGame[] = [];
+  let shownCount = initialSize;
+  let catalogReady = false;
+  let catalogActivated = false;
+  let catalogLoading = false;
 
   function isDesktop() {
     return mq.matches;
@@ -296,49 +335,140 @@ export function initCategoryUI() {
     });
   }
 
-  function applyFilters(opts?: { scroll?: boolean }) {
-    const q = (search?.value || '').trim().toLowerCase();
-    const filtering = activeCategory !== 'All' || q.length > 0;
-    let visible = 0;
-
-    cards.forEach((card) => {
-      card.classList.remove('row-trim-hide');
-      const show = cardMatches(card, activeCategory, q);
-      card.classList.toggle('is-filtered-out', !show);
-      if (show) visible += 1;
-    });
-
-    browseSections.forEach((section) => {
-      section.classList.toggle('is-browse-hidden', filtering);
-    });
-
-    trimFullRows(document.getElementById('games-grid'));
-
-    if (empty) empty.classList.toggle('is-filtered-out', visible > 0);
+  function updateCatalogChrome(filtering: boolean) {
+    const total = filteredGames.length;
+    const showing = Math.min(shownCount, total);
+    if (empty) empty.classList.toggle('is-filtered-out', !catalogReady || total > 0);
     if (activeLabel) {
+      const q = (search?.value || '').trim();
       activeLabel.textContent =
         activeCategory === 'All' ? (q ? `Search “${q}”` : 'All games') : activeCategory;
     }
     if (resultCount) {
-      resultCount.textContent = filtering ? `${visible} shown` : '';
+      resultCount.textContent = filtering && catalogReady ? `${total} match` : '';
+    }
+    if (pageStatus) {
+      if (!catalogActivated) {
+        pageStatus.textContent =
+          catalogTotalHint > 0
+            ? `${catalogTotalHint} games available — scroll here to load`
+            : 'Scroll here to load the catalog';
+      } else if (catalogLoading) {
+        pageStatus.textContent = 'Loading catalog…';
+      } else if (total === 0) {
+        pageStatus.textContent = 'No games to show';
+      } else {
+        pageStatus.textContent = `Showing ${showing} of ${total}`;
+      }
+    }
+    if (loadMoreBtn) {
+      const more = catalogReady && showing < total;
+      loadMoreBtn.hidden = !more;
+      loadMoreBtn.disabled = !catalogReady || catalogLoading;
+      loadMoreBtn.textContent = more
+        ? `Load more games (${Math.min(stepSize, total - showing)} more)`
+        : 'Load more games';
+    }
+    if (catalogPlaceholder) {
+      catalogPlaceholder.hidden = catalogReady || catalogLoading;
+      if (catalogLoading) catalogPlaceholder.textContent = 'Loading catalog…';
+      else if (!catalogActivated) {
+        catalogPlaceholder.textContent = 'Scroll here to load the full catalog…';
+        catalogPlaceholder.hidden = false;
+      }
     }
     const live = document.getElementById('filter-live');
-    if (live) {
+    if (live && catalogReady) {
       const label =
-        activeCategory === 'All' ? (q ? `Search ${q}` : 'All games') : activeCategory;
-      live.textContent = filtering
-        ? `${label}: ${visible} games shown`
-        : `Showing all ${visible} games`;
+        activeCategory === 'All'
+          ? (search?.value || '').trim()
+            ? `Search ${search?.value}`
+            : 'All games'
+          : activeCategory;
+      live.textContent = `${label}: showing ${showing} of ${total} games`;
+    }
+  }
+
+  function renderCatalogPage() {
+    if (!grid || !catalogReady) {
+      updateCatalogChrome(activeCategory !== 'All' || Boolean((search?.value || '').trim()));
+      return;
+    }
+    const slice = filteredGames.slice(0, shownCount);
+    grid.innerHTML = slice.map(catalogCardHtml).join('');
+    if (catalogPlaceholder) catalogPlaceholder.hidden = true;
+    const filtering = activeCategory !== 'All' || Boolean((search?.value || '').trim());
+    updateCatalogChrome(filtering);
+  }
+
+  function applyFilters(opts?: { scroll?: boolean; resetPage?: boolean; activate?: boolean }) {
+    const q = (search?.value || '').trim().toLowerCase();
+    const filtering = activeCategory !== 'All' || q.length > 0;
+
+    browseSections.forEach((section) => {
+      section.classList.toggle('is-browse-hidden', filtering);
+    });
+    document.body.classList.toggle('is-filtering', filtering);
+
+    if (filtering || opts?.activate) {
+      void activateCatalog();
     }
 
-    document.body.classList.toggle('is-filtering', filtering);
+    if (catalogReady) {
+      filteredGames = catalogGames.filter((g) => catalogMatches(g, activeCategory, q));
+      if (opts?.resetPage !== false) shownCount = initialSize;
+      renderCatalogPage();
+    } else {
+      if (empty) empty.classList.toggle('is-filtered-out', true);
+      if (loadMoreBtn) loadMoreBtn.hidden = true;
+      updateCatalogChrome(filtering);
+    }
 
     if (opts?.scroll && filtering && catalog) {
       catalog.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
-  search?.addEventListener('input', () => applyFilters({ scroll: false }));
+  function activateCatalog(): Promise<void> {
+    if (catalogReady || catalogLoading) return Promise.resolve();
+    if (!grid?.hasAttribute('data-catalog-grid')) return Promise.resolve();
+    catalogActivated = true;
+    catalogLoading = true;
+    if (catalogPlaceholder) {
+      catalogPlaceholder.hidden = false;
+      catalogPlaceholder.textContent = 'Loading catalog…';
+    }
+    updateCatalogChrome(false);
+
+    return fetch('/games-index.json', { credentials: 'same-origin' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('index'))))
+      .then((data: { games?: CatalogGame[] }) => {
+        const list = Array.isArray(data?.games) ? data.games : [];
+        catalogGames = list.filter(
+          (g) => g && typeof g.s === 'string' && typeof g.t === 'string',
+        );
+        catalogReady = true;
+        catalogLoading = false;
+        shownCount = initialSize;
+        applyFilters({ scroll: false, resetPage: true });
+      })
+      .catch(() => {
+        catalogLoading = false;
+        if (catalogPlaceholder) {
+          catalogPlaceholder.hidden = false;
+          catalogPlaceholder.textContent = 'Could not load the catalog. Refresh and try again.';
+        }
+        if (loadMoreBtn) {
+          loadMoreBtn.hidden = true;
+          loadMoreBtn.disabled = true;
+        }
+        if (pageStatus) pageStatus.textContent = 'Catalog unavailable';
+      });
+  }
+
+  search?.addEventListener('input', () =>
+    applyFilters({ scroll: false, resetPage: true, activate: true }),
+  );
   search?.setAttribute('aria-controls', 'games-grid');
 
   pills.forEach((pill) => {
@@ -349,9 +479,19 @@ export function initCategoryUI() {
         p.classList.toggle('is-active', on);
         p.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
-      applyFilters({ scroll: true });
+      applyFilters({
+        scroll: true,
+        resetPage: true,
+        activate: activeCategory !== 'All',
+      });
       if (!isDesktop()) setMobileOpen(false);
     });
+  });
+
+  loadMoreBtn?.addEventListener('click', () => {
+    if (!catalogReady) return;
+    shownCount += stepSize;
+    renderCatalogPage();
   });
 
   document.addEventListener('keydown', (e) => {
@@ -384,9 +524,31 @@ export function initCategoryUI() {
     }
   }
 
-  applyFilters({ scroll: Boolean(qParam || catParam) });
+  const needsCatalogNow = Boolean(qParam || (catParam && activeCategory !== 'All'));
+  applyFilters({
+    scroll: needsCatalogNow,
+    resetPage: true,
+    activate: needsCatalogNow,
+  });
   initShelves();
-  initRandomGame();
+  initRandomGame(async () => {
+    await activateCatalog();
+    return filteredGames.length ? filteredGames : catalogGames;
+  });
   initPlayedRecord();
   initFavoriteButton();
+
+  // Only fetch + render All Games when the bottom catalog section is on screen
+  if (grid?.hasAttribute('data-catalog-grid') && catalog) {
+    updateCatalogChrome(false);
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        void activateCatalog();
+      },
+      { root: null, rootMargin: '160px 0px', threshold: 0.01 },
+    );
+    io.observe(catalog);
+  }
 }

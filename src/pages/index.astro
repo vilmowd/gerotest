@@ -29,6 +29,9 @@ const categoryRows = topCategories
   .filter((row) => row.games.length >= 9);
 const morePopular = getPopularGames(8, 29);
 const games = allGames;
+/** Catalog loads when scrolled into view: 80 first, then +40 via Load more */
+const CATALOG_INITIAL = 80;
+const CATALOG_STEP = 40;
 
 const dayIndex = Math.floor(Date.now() / 86_400_000);
 const dailyPick = allGames.length
@@ -324,8 +327,32 @@ const jsonLd = {
       </div>
     </div>
 
-    <div id="games-grid" class="games-row-grid" data-full-rows role="list">
-      {games.map((game) => <GameCard game={game} />)}
+    <div
+      id="games-grid"
+      class="games-row-grid"
+      role="list"
+      data-catalog-grid
+      data-catalog-initial={CATALOG_INITIAL}
+      data-catalog-step={CATALOG_STEP}
+      data-catalog-total={games.length}
+    ></div>
+
+    <p id="catalog-placeholder" class="py-10 text-center text-sm text-arcade-muted">
+      Scroll here to load the full catalog…
+    </p>
+
+    <div class="mt-6 flex flex-col items-center gap-2">
+      <button
+        type="button"
+        id="catalog-load-more"
+        class="btn btn-accent min-h-11 px-6"
+        hidden
+      >
+        Load more games
+      </button>
+      <p id="catalog-page-status" class="text-xs text-arcade-muted" aria-live="polite">
+        {games.length} games available
+      </p>
     </div>
 
     <p id="games-empty" class="is-filtered-out py-16 text-center text-arcade-muted">
