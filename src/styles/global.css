@@ -127,8 +127,22 @@
   }
 
   .ad-unit {
-    @apply overflow-hidden rounded-xl border border-arcade-border bg-arcade-panel/80 p-3;
+    @apply overflow-hidden rounded-xl;
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .ad-unit.is-filled {
+    @apply border border-arcade-border bg-arcade-panel/80 p-3;
     min-height: 90px;
+  }
+
+  .ad-unit:not(.is-filled) .ad-unit-label,
+  .ad-unit.is-unfilled,
+  .ad-unit:has(ins.adsbygoogle[data-ad-status='unfilled']) {
+    display: none !important;
   }
 
   .ad-unit-label {
@@ -657,10 +671,15 @@ body.theater-mode .theater-bar {
 .game-card,
 .game-banner,
 .ui-panel,
-.ad-unit,
+.ad-unit.is-filled,
 .gf-choice-card {
   background-color: #222e48 !important;
   border-color: #4a5d78 !important;
+}
+
+.ad-unit:not(.is-filled) {
+  background-color: transparent !important;
+  border-color: transparent !important;
 }
 
 .btn:not(.btn-accent),

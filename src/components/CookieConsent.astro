@@ -111,13 +111,57 @@ const gaId = getGoogleAnalyticsId();
     document.head.appendChild(s);
   }
 
+  function settleAdUnit(el) {
+    var ins = el.querySelector('ins.adsbygoogle');
+    if (!ins) {
+      el.hidden = true;
+      return 'empty';
+    }
+    var status = ins.getAttribute('data-ad-status');
+    if (status === 'filled') {
+      el.hidden = false;
+      el.classList.add('is-filled');
+      el.classList.remove('is-unfilled');
+      return 'filled';
+    }
+    if (status === 'unfilled') {
+      el.classList.remove('is-filled');
+      el.classList.add('is-unfilled');
+      el.hidden = true;
+      return 'unfilled';
+    }
+    return 'pending';
+  }
+
+  function watchAdUnit(el) {
+    if (settleAdUnit(el) !== 'pending') return;
+    var ins = el.querySelector('ins.adsbygoogle');
+    var obs = new MutationObserver(function () {
+      if (settleAdUnit(el) !== 'pending') obs.disconnect();
+    });
+    if (ins) obs.observe(ins, { attributes: true, attributeFilter: ['data-ad-status'] });
+    window.setTimeout(function () {
+      if (settleAdUnit(el) === 'pending') {
+        el.classList.add('is-unfilled');
+        el.hidden = true;
+        obs.disconnect();
+      }
+    }, 8000);
+  }
+
   function revealAdUnits() {
     document.querySelectorAll('[data-ad-unit]').forEach(function (el) {
+      if (el.dataset.adRequested === '1') {
+        watchAdUnit(el);
+        return;
+      }
       el.hidden = false;
+      el.dataset.adRequested = '1';
       try {
         window.adsbygoogle = window.adsbygoogle || [];
         window.adsbygoogle.push({});
       } catch (e) {}
+      watchAdUnit(el);
     });
   }
 
