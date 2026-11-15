@@ -5,10 +5,10 @@ export default {
     extend: {
       colors: {
         arcade: {
-          bg: '#0b0f1a',
-          panel: '#121826',
-          card: '#161e2e',
-          border: '#ffffff',
+          bg: '#141b2d',
+          panel: '#1c2740',
+          card: '#222e48',
+          border: '#4a5d78',
           muted: '#8b9bb4',
           accent: '#22d3ee',
           accent2: '#a78bfa',
@@ -21,11 +21,11 @@ export default {
         body: ['"Exo 2"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        glow: '0 0 24px rgba(255, 255, 255, 0.18)',
+        glow: '0 0 24px rgba(34, 211, 238, 0.14)',
       },
       backgroundImage: {
         'arcade-grid':
-          'radial-gradient(ellipse at top, rgba(34,211,238,0.12), transparent 50%), linear-gradient(180deg, #0b0f1a 0%, #0e1422 100%)',
+          'radial-gradient(ellipse at top, rgba(34,211,238,0.12), transparent 50%), linear-gradient(180deg, #141b2d 0%, #101625 100%)',
       },
     },
   },
